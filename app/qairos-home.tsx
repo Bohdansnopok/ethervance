@@ -24,6 +24,8 @@ import {
 } from "./qairos";
 import { useTheme } from "./theme-provider";
 import { useWallet, type DiscoveredWallet } from "./wallet-provider";
+import PrivyWalletConnect from "./privy-wallet-connect";
+import { EnglishContent, translateText } from "./i18n";
 
 type Post = { title: string; text: string };
 type MainnetMarket = {
@@ -182,7 +184,7 @@ function shortAddress(address: string) {
 
 function formatEtherSafe(value: string | bigint) {
   try {
-    return Number(formatEther(BigInt(value))).toLocaleString("ru-RU", {
+    return Number(formatEther(BigInt(value))).toLocaleString("en-US", {
       maximumFractionDigits: 5,
     });
   } catch {
@@ -196,7 +198,7 @@ function formatDate(value: number | string) {
   );
   return Number.isNaN(date.getTime())
     ? "—"
-    : new Intl.DateTimeFormat("ru-RU", {
+    : new Intl.DateTimeFormat("en-US", {
         dateStyle: "medium",
         timeStyle: "short",
       }).format(date);
@@ -259,6 +261,7 @@ function validateSnapshot(value: unknown): MainnetSnapshot {
 
 function BannerArtwork({ post, index }: { post: Post; index: number }) {
   return (
+    <EnglishContent>
     <div className={`post-art art-${String(index + 1).padStart(2, "0")}`}>
       <span className="post-art-label">
         QAIROS / {String(index + 1).padStart(2, "0")}
@@ -271,6 +274,7 @@ function BannerArtwork({ post, index }: { post: Post; index: number }) {
       <h3>{post.title}</h3>
       <span className="post-art-footer">ETHEREUM · 2026</span>
     </div>
+    </EnglishContent>
   );
 }
 
@@ -476,7 +480,7 @@ function drawBanner(post: Post, index: number) {
     );
   context.fillStyle = "#a9ada1";
   context.font = "18px monospace";
-  context.fillText("ГОТОВНОСТЬ К ПОСТКВАНТОВОЙ ЭПОХЕ", 64, 600);
+  context.fillText("POST-QUANTUM READINESS", 64, 600);
   return canvas;
 }
 
@@ -484,6 +488,7 @@ export default function QairosHome() {
   const { theme, toggleTheme } = useTheme();
   const wallet = useWallet();
   const [live, setLive] = useState<LiveState>({ phase: "loading" });
+  const [statusRefreshing, setStatusRefreshing] = useState(false);
   const [statusRefreshVersion, setStatusRefreshVersion] = useState(0);
   const [walletOpen, setWalletOpen] = useState(false);
   const [notice, setNotice] = useState("");
@@ -550,6 +555,7 @@ export default function QairosHome() {
     const refresh = async () => {
       if (inFlight) return;
       inFlight = true;
+      if (active) setStatusRefreshing(true);
       controller = new AbortController();
       const timeout = window.setTimeout(() => controller?.abort(), 12_000);
       try {
@@ -574,6 +580,7 @@ export default function QairosHome() {
       } finally {
         window.clearTimeout(timeout);
         inFlight = false;
+        if (active) setStatusRefreshing(false);
       }
     };
     const onVisibility = () => {
@@ -1199,7 +1206,11 @@ export default function QairosHome() {
 
   const exportPost = (index: number) => {
     try {
-      const canvas = drawBanner(posts[index], index);
+      const post = posts[index];
+      const canvas = drawBanner(
+        { title: translateText(post.title), text: translateText(post.text) },
+        index,
+      );
       const link = document.createElement("a");
       link.href = canvas.toDataURL("image/png");
       link.download = `qairos-post-${String(index + 1).padStart(2, "0")}.png`;
@@ -1215,7 +1226,7 @@ export default function QairosHome() {
 
   const copyPost = async (post: Post) => {
     try {
-      await navigator.clipboard.writeText(post.text);
+      await navigator.clipboard.writeText(translateText(post.text));
       setNotice("Текст публикации скопирован.");
     } catch {
       setNotice("Буфер обмена недоступен в этом браузере.");
@@ -1494,7 +1505,7 @@ export default function QairosHome() {
               </div>
               <div>
                 <span>Публичный ключ</span>
-                <b>{keys.publicKey.length.toLocaleString("ru-RU")} байт</b>
+                <b>{keys.publicKey.length.toLocaleString("en-US")} bytes</b>
               </div>
               <div>
                 <span>Секретный ключ</span>
@@ -1688,7 +1699,7 @@ export default function QairosHome() {
             <div className="data-grid">
               <div>
                 <span>Размер подписи</span>
-                <b>{signature.length.toLocaleString("ru-RU")} байт</b>
+                <b>{signature.length.toLocaleString("en-US")} bytes</b>
               </div>
               <div>
                 <span>Результат проверки</span>
@@ -2008,6 +2019,7 @@ export default function QairosHome() {
   const currentTool = toolList.find(([id]) => id === activeTool) || toolList[0];
 
   return (
+    <EnglishContent>
     <main>
       <header className="site-header">
         <nav className="nav-shell" aria-label="Главная навигация">
@@ -2148,7 +2160,7 @@ export default function QairosHome() {
               <div>
                 <span className="eyebrow">
                   {live.phase === "live"
-                    ? `MAINNET · БЛОК ${statusData!.blockNumber.toLocaleString("ru-RU")}`
+                    ? `MAINNET · BLOCK ${statusData!.blockNumber.toLocaleString("en-US")}`
                     : live.phase === "loading"
                       ? "ПОДКЛЮЧАЕМСЯ К MAINNET"
                       : "СИГНАЛ НЕИЗВЕСТЕН"}
@@ -2201,11 +2213,18 @@ export default function QairosHome() {
               <span>Автообновление · 30 сек.</span>
               <button
                 className="status-refresh"
+                disabled={statusRefreshing}
                 onClick={() =>
                   setStatusRefreshVersion((current) => current + 1)
                 }
               >
-                Обновить сейчас
+                <span
+                  className={
+                    statusRefreshing ? "loading-dot is-loading" : "loading-dot"
+                  }
+                  aria-hidden="true"
+                />
+                {statusRefreshing ? "Проверяем Mainnet…" : "Обновить сейчас"}
               </button>
             </div>
           </div>
@@ -2729,6 +2748,18 @@ export default function QairosHome() {
                 Выберите обнаруженный браузерный кошелек. Запрос аккаунта будет
                 показан только после вашего клика.
               </p>
+              {process.env.NEXT_PUBLIC_PRIVY_APP_ID && (
+                <div className="privy-connect-wrap">
+                  <PrivyWalletConnect
+                    onStart={() => setWalletOpen(false)}
+                    onConnected={() => setWalletOpen(false)}
+                  />
+                  <p className="small-note">
+                    Privy откроет собственное окно подключения. Разрешение на
+                    доступ к адресу запрашивается в кошельке.
+                  </p>
+                </div>
+              )}
               {wallet.wallets.length ? (
                 <div className="wallet-options">
                   {wallet.wallets.map((provider) => (
@@ -2838,7 +2869,7 @@ export default function QairosHome() {
                 <span>Значение</span>
                 <b>{formatEtherSafe(review.value)} ETH</b>
                 <span>Лимит газа</span>
-                <b>{review.gasLimit.toLocaleString("ru-RU")}</b>
+                <b>{review.gasLimit.toLocaleString("en-US")}</b>
                 <span>Оценка комиссии</span>
                 <b>
                   до {formatEtherSafe(review.gasLimit * review.gasPrice)} ETH
@@ -2887,5 +2918,6 @@ export default function QairosHome() {
         )}
       </dialog>
     </main>
+    </EnglishContent>
   );
 }

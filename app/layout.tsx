@@ -3,16 +3,16 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "Qairos — квантовая защита Ethereum",
+  title: "Qairos — Quantum Security for Ethereum",
   description:
-    "Мониторинг квантовых угроз, постквантовые инструменты и защита активов в Ethereum.",
+    "Quantum threat monitoring, post-quantum tools, and asset protection for Ethereum.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         <Providers>{children}</Providers>
       </body>
