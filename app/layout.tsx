@@ -3,9 +3,9 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "Qairos — Quantum Security for Ethereum",
+  title: "Ethervance — Quantum Readiness for Ethereum",
   description:
-    "Quantum threat monitoring, post-quantum tools, and asset protection for Ethereum.",
+    "Quantum threat monitoring and post-quantum readiness tools for Ethereum.",
 };
 
 export default function RootLayout({

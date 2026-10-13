@@ -395,18 +395,26 @@ export function translateText(value: string): string {
   if (sessionExpiry) return `Signed in · expires ${sessionExpiry[1]}`;
   const walletRequest = normalized.match(/^Ожидаем подтверждение в (.+)…$/);
   if (walletRequest) return `Waiting for approval in ${walletRequest[1]}…`;
-  return value;
+  return value
+    .replace(/\bQAIROS\b/g, "ETHERVANCE")
+    .replace(/\bQairos\b/g, "Ethervance");
 }
 
 function localizeNode(node: ReactNode): ReactNode {
-  if (typeof node === "string") return translateText(node);
+  if (typeof node === "string")
+    return translateText(node)
+      .replace(/\bQAIROS\b/g, "ETHERVANCE")
+      .replace(/\bQairos\b/g, "Ethervance");
   if (Array.isArray(node)) return node.map(localizeNode);
   if (!isValidElement<{ children?: ReactNode }>(node)) return node;
 
   const props = { ...node.props } as Record<string, unknown>;
   for (const attribute of ["aria-label", "title", "placeholder", "alt"]) {
     const value = props[attribute];
-    if (typeof value === "string") props[attribute] = translateText(value);
+    if (typeof value === "string")
+      props[attribute] = translateText(value)
+        .replace(/\bQAIROS\b/g, "ETHERVANCE")
+        .replace(/\bQairos\b/g, "Ethervance");
   }
   if ("children" in props)
     props.children = localizeNode(props.children as ReactNode);
