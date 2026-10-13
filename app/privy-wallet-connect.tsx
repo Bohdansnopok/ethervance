@@ -48,7 +48,7 @@ export default function PrivyWalletConnect({
       <span className="privy-mark" aria-hidden="true">
         P
       </span>
-      Подключить через Privy
+      Connect with Privy
     </button>
   );
 }

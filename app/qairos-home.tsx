@@ -25,7 +25,6 @@ import {
 import { useTheme } from "./theme-provider";
 import { useWallet } from "./wallet-provider";
 import PrivyWalletConnect from "./privy-wallet-connect";
-import { EnglishContent, translateText } from "./i18n";
 
 type MainnetMarket = {
   id: number;
@@ -94,35 +93,35 @@ type Review = {
 };
 
 const toolList = [
-  ["oracle", "Монитор угроз", "Живой сигнал Mainnet и ступени Canary"],
-  ["ark", "Qairos Ark", "ML-DSA-44, commitment и recovery kit"],
-  ["recover", "Восстановление", "Проверка набора и два шага транзакции"],
-  ["signer", "PQ-подпись", "Создание и проверка ML-DSA-44 подписи"],
-  ["canary", "Лестница Canary", "Статус публичных криптографических задач"],
-  ["markets", "Рынки", "Позиции на Mainnet с явным подтверждением"],
-  ["guard", "Генератор Guard", "Исходный код защитного контракта"],
+  ["oracle", "Threat monitor", "Live Mainnet signal and Canary rungs"],
+  ["ark", "Ethervance Ark", "ML-DSA-44, commitment, and recovery kit"],
+  ["recover", "Recovery", "Kit validation and a two-step transaction"],
+  ["signer", "Post-quantum signature", "Create and verify an ML-DSA-44 signature"],
+  ["canary", "Canary ladder", "Public cryptographic challenge status"],
+  ["markets", "Markets", "Mainnet positions with explicit confirmation"],
+  ["guard", "Guard generator", "Protective contract source code"],
 ] as const;
 
 const faq = [
   [
-    "Может ли Qairos остановить квантовый компьютер?",
-    "Нет. Qairos отслеживает публичные сигналы и помогает подготовить действия. Система не останавливает вычисления и не гарантирует сохранность средств.",
+    "Can Ethervance stop a quantum computer?",
+    "No. Ethervance tracks public signals and helps you prepare a response. It does not stop computation or guarantee that funds are safe.",
   ],
   [
-    "Работают ли контракты в Mainnet?",
-    "Официальный status API публикует состояние Ethereum Mainnet и deployment addresses. Контракты экспериментальные и не проходили независимый аудит; не вносите реальные средства без собственной проверки.",
+    "Are the contracts live on Mainnet?",
+    "The official status API publishes Ethereum Mainnet state and deployment addresses. The contracts are experimental and unaudited; do not deposit real funds without your own review.",
   ],
   [
-    "Куда отправляются мои ключи?",
-    "ML-DSA ключи создаются локально в браузере. Приватная часть не отправляется на сервер и не включается в recovery kit.",
+    "Where are my keys sent?",
+    "ML-DSA keys are generated locally in your browser. The private key is never sent to a server or included in the recovery kit.",
   ],
   [
-    "Какие кошельки поддерживаются?",
+    "Which wallets are supported?",
     "Connect an Ethereum wallet such as MetaMask through Privy's connection window. Your wallet will ask you to approve the connection.",
   ],
   [
-    "Нужно ли переключаться на Ethereum Mainnet?",
-    "Да. Записи в контракт выполняются только в chain ID 1. Перед отправкой сайт проверяет сеть, симулирует вызов и показывает параметры для явного подтверждения в кошельке.",
+    "Do I need to switch to Ethereum Mainnet?",
+    "Yes. Contract writes are allowed only on chain ID 1. Before sending, the site checks the network, simulates the call, and displays transaction details for explicit confirmation in your wallet.",
   ],
 ];
 
@@ -154,7 +153,7 @@ function formatDate(value: number | string) {
 
 function validateSnapshot(value: unknown): MainnetSnapshot {
   if (!value || typeof value !== "object")
-    throw new Error("Сервер вернул некорректные данные.");
+    throw new Error("The server returned invalid data.");
   const snapshot = value as Partial<MainnetSnapshot>;
   if (
     snapshot.chainId !== 1 ||
@@ -162,7 +161,7 @@ function validateSnapshot(value: unknown): MainnetSnapshot {
     snapshot.threatLevel! < 0 ||
     snapshot.threatLevel! > 5
   ) {
-    throw new Error("Ответ не прошёл проверку сети или уровня угрозы.");
+    throw new Error("The response failed network or threat-level validation.");
   }
   const observedAt = Date.parse(snapshot.observedAtUtc || "");
   if (
@@ -171,7 +170,7 @@ function validateSnapshot(value: unknown): MainnetSnapshot {
     Date.now() - observedAt > 90_000
   ) {
     throw new Error(
-      "Снимок Mainnet устарел. Безопасный уровень не предполагается.",
+      "The Mainnet snapshot is stale. No safe level is assumed.",
     );
   }
   if (
@@ -180,7 +179,7 @@ function validateSnapshot(value: unknown): MainnetSnapshot {
     !Array.isArray(snapshot.markets)
   ) {
     throw new Error(
-      "В ответе отсутствуют данные контрактов, ступеней или рынков.",
+      "The response is missing contract, rung, or market data.",
     );
   }
   const officialAddresses: Record<string, string> = {
@@ -201,7 +200,7 @@ function validateSnapshot(value: unknown): MainnetSnapshot {
     )
   ) {
     throw new Error(
-      "Адреса или состояние deployment не совпали с официальным реестром.",
+      "Addresses or deployment status did not match the official registry.",
     );
   }
   return snapshot as MainnetSnapshot;
@@ -225,7 +224,7 @@ export default function QairosHome() {
   const [commitment, setCommitment] = useState("");
   const [keyBusy, setKeyBusy] = useState(false);
   const [message, setMessage] = useState(
-    "Я проверяю готовность кошелька к постквантовой миграции.",
+    "I am checking this wallet's readiness for a post-quantum migration.",
   );
   const [signature, setSignature] = useState<Uint8Array | null>(null);
   const [signatureResult, setSignatureResult] = useState("");
@@ -288,7 +287,7 @@ export default function QairosHome() {
           signal: controller.signal,
         });
         if (!response.ok)
-          throw new Error(`Сервис Mainnet вернул HTTP ${response.status}.`);
+          throw new Error(`Mainnet service returned HTTP ${response.status}.`);
         const snapshot = validateSnapshot(await response.json());
         if (active) setLive({ phase: "live", snapshot });
       } catch (error) {
@@ -298,7 +297,7 @@ export default function QairosHome() {
             message:
               error instanceof Error
                 ? error.message
-                : "Мониторинг Mainnet недоступен.",
+                : "Mainnet monitoring is unavailable.",
           });
       } finally {
         window.clearTimeout(timeout);
@@ -416,7 +415,7 @@ export default function QairosHome() {
           setCurrentBlock(blockNumber);
         }
       } catch {
-        if (!cancelled) setVaultBalance("Недоступно");
+        if (!cancelled) setVaultBalance("Unavailable");
       }
     };
     void readBalance();
@@ -433,7 +432,7 @@ export default function QairosHome() {
     )
       return;
     setNotice(
-      "Аккаунт кошелька изменился. Войдите заново перед любым действием.",
+      "The wallet account changed. Sign in again before continuing.",
     );
     setWalletSession(null);
   }, [wallet.account, walletSession]);
@@ -446,11 +445,11 @@ export default function QairosHome() {
 
   const signIn = async () => {
     if (!wallet.provider || !wallet.account) {
-      setNotice("Сначала подключите кошелек.");
+      setNotice("Connect a wallet first.");
       return;
     }
     if (wallet.chainId !== MAINNET_CHAIN_ID) {
-      setNotice("Для входа переключите кошелек на Ethereum Mainnet.");
+      setNotice("Switch your wallet to Ethereum Mainnet to sign in.");
       return;
     }
     setAuthBusy(true);
@@ -470,7 +469,7 @@ export default function QairosHome() {
       if (!nonceResponse.ok || typeof challenge.message !== "string") {
         throw new Error(
           challenge.error ||
-            "Сервис кошелька недоступен. Проверьте подключение same-origin API.",
+            "Wallet service unavailable. Check the same-origin API connection.",
         );
       }
       const accountBeforeSign = wallet.account;
@@ -492,7 +491,7 @@ export default function QairosHome() {
         liveChain !== "0x1"
       ) {
         throw new Error(
-          "Аккаунт или сеть изменились во время подписи. Повторите вход.",
+          "The account or network changed while signing. Sign in again.",
         );
       }
       const verifyResponse = await fetch("/api/wallet/verify", {
@@ -514,7 +513,7 @@ export default function QairosHome() {
         getAddress(session.address) !== accountBeforeSign
       ) {
         throw new Error(
-          session.error || "Сервер не подтвердил подпись этого аккаунта.",
+          session.error || "The server did not verify this account's signature.",
         );
       }
       setWalletSession({
@@ -523,13 +522,13 @@ export default function QairosHome() {
         expiresAt: session.expiresAt,
       });
       setNotice(
-        "Вход подтвержден подписью без газа. Средства и разрешения не запрашивались.",
+        "Sign-in was verified with a gas-free signature. No funds or permissions were requested.",
       );
     } catch (error) {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Не удалось войти через кошелек.",
+          : "Could not sign in with the wallet.",
       );
     } finally {
       setAuthBusy(false);
@@ -552,13 +551,13 @@ export default function QairosHome() {
         signal: AbortSignal.timeout(12_000),
       });
       if (!response.ok)
-        throw new Error("Сервер не отозвал сессию. Повторите выход позже.");
+        throw new Error("The server could not revoke the session. Try signing out again later.");
       setWalletSession(null);
-      setNotice("Сессия кошелька завершена.");
+      setNotice("Wallet session ended.");
       return true;
     } catch (error) {
       setNotice(
-        error instanceof Error ? error.message : "Не удалось завершить сессию.",
+        error instanceof Error ? error.message : "Could not complete the session.",
       );
       return false;
     }
@@ -567,9 +566,9 @@ export default function QairosHome() {
   const copyContractAddress = async () => {
     try {
       await navigator.clipboard.writeText(QAIROS_ADDRESSES.oracle);
-      setNotice("Адрес QairosOracle скопирован.");
+      setNotice("Oracle contract address copied.");
     } catch {
-      setNotice("Буфер обмена недоступен в этом браузере.");
+      setNotice("Clipboard unavailable in this browser.");
     }
   };
 
@@ -589,17 +588,17 @@ export default function QairosHome() {
     afterConfirm?: (blockNumber: number) => void;
   }) => {
     if (!wallet.provider || !wallet.account) {
-      setNotice("Подключите кошелек, чтобы подготовить транзакцию.");
+      setNotice("Connect a wallet to prepare the transaction.");
       setWalletOpen(true);
       return;
     }
     if (wallet.chainId !== MAINNET_CHAIN_ID) {
-      setNotice("Транзакции разрешены только в Ethereum Mainnet.");
+      setNotice("Transactions are allowed only on Ethereum Mainnet.");
       return;
     }
     if (!sessionReady || !walletSession) {
       setNotice(
-        "Сначала войдите, подписав одноразовое сообщение Qairos без газа.",
+        "Sign in first by signing a one-time Ethervance message (no gas).",
       );
       setWalletOpen(true);
       return;
@@ -617,7 +616,7 @@ export default function QairosHome() {
         currentAccounts[0] !== wallet.account ||
         currentChain !== "0x1"
       )
-        throw new Error("Кошелек или сеть изменились. Ничего не отправлено.");
+        throw new Error("The wallet or network changed. Nothing was sent.");
       const browserProvider = new BrowserProvider(
         wallet.provider as unknown as Eip1193Provider,
         "any",
@@ -643,7 +642,7 @@ export default function QairosHome() {
         walletSession.address.toLowerCase() !== wallet.account.toLowerCase()
       )
         throw new Error(
-          "Сессия, аккаунт или сеть изменились во время проверки. Ничего не отправлено.",
+          "The session, account, or network changed during verification. Nothing was sent.",
         );
       setReview({
         title,
@@ -661,7 +660,7 @@ export default function QairosHome() {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Симуляция транзакции не прошла. Ничего не отправлено.",
+          : "Transaction simulation failed. Nothing was sent.",
       );
     } finally {
       setSending(false);
@@ -683,7 +682,7 @@ export default function QairosHome() {
         !sessionReady ||
         wallet.account.toLowerCase() !== review.from.toLowerCase()
       )
-        throw new Error("Сессия больше не соответствует кошельку.");
+        throw new Error("The session no longer matches the wallet.");
       const accounts = await wallet.provider.request({
         method: "eth_accounts",
       });
@@ -693,7 +692,7 @@ export default function QairosHome() {
         accounts[0] !== review.from ||
         chain !== "0x1"
       )
-        throw new Error("Кошелек или сеть изменились. Ничего не отправлено.");
+        throw new Error("The wallet or network changed. Nothing was sent.");
       const browserProvider = new BrowserProvider(
         wallet.provider as unknown as Eip1193Provider,
         "any",
@@ -720,8 +719,8 @@ export default function QairosHome() {
         liveAccounts[0] !== review.from ||
         liveChain !== "0x1"
       )
-        throw new Error("Повторная проверка кошелька не прошла.");
-      setNotice("Ожидаем подтверждение транзакции в кошельке…");
+        throw new Error("The wallet re-check failed.");
+      setNotice("Waiting for transaction confirmation in your wallet…");
       const transaction = await signer.sendTransaction({
         to: review.to,
         data: review.data,
@@ -729,23 +728,23 @@ export default function QairosHome() {
         gasLimit: (freshGas * 120n) / 100n + 1_000n,
       });
       setNotice(
-        `Транзакция отправлена: ${transaction.hash.slice(0, 12)}… Ожидаем подтверждение блока.`,
+        `Transaction sent: ${transaction.hash.slice(0, 12)}… Waiting for block confirmation.`,
       );
       const receipt = await transaction.wait(1, 240_000);
       if (!receipt || receipt.status !== 1)
         throw new Error(
-          `Транзакция отменена или завершилась ошибкой: ${transaction.hash}`,
+          `Transaction was cancelled or failed: ${transaction.hash}`,
         );
       review.afterConfirm?.(receipt.blockNumber);
       setNotice(
-        `Подтверждено в блоке ${receipt.blockNumber}. Хэш: ${transaction.hash}`,
+        `Confirmed in block ${receipt.blockNumber}. Hash: ${transaction.hash}`,
       );
       setReview(null);
       setReviewChecked(false);
       setStatusRefreshVersion((current) => current + 1);
     } catch (error) {
       setNotice(
-        error instanceof Error ? error.message : "Транзакция не подтверждена.",
+        error instanceof Error ? error.message : "Transaction was not confirmed.",
       );
     } finally {
       setSending(false);
@@ -757,12 +756,12 @@ export default function QairosHome() {
     try {
       if (!window.isSecureContext)
         throw new Error(
-          "Для безопасной генерации ключей нужен HTTPS или localhost.",
+          "Key generation requires HTTPS or localhost.",
         );
       const browserEntropy = window.crypto.getRandomValues(new Uint8Array(64));
       let seed: Uint8Array<ArrayBufferLike> = browserEntropy.slice(0, 32);
       let salt: Uint8Array<ArrayBufferLike> = browserEntropy.slice(32);
-      let entropyLabel = "Браузерный CSPRNG";
+      let entropyLabel = "Browser CSPRNG";
       const qrngOrigin =
         window.location.hostname === "qairos.tech"
           ? window.location.origin
@@ -773,7 +772,7 @@ export default function QairosHome() {
           cache: "no-store",
           signal: AbortSignal.timeout(8_000),
         });
-        if (!response.ok) throw new Error("QRNG недоступен");
+        if (!response.ok) throw new Error("QRNG unavailable");
         const result = await response.json();
         if (
           !Array.isArray(result.data) ||
@@ -783,7 +782,7 @@ export default function QairosHome() {
               !Number.isInteger(byte) || Number(byte) < 0 || Number(byte) > 255,
           )
         )
-          throw new Error("Некорректный ответ QRNG");
+          throw new Error("Invalid QRNG response");
         const quantumEntropy = Uint8Array.from(
           result.data.slice(0, 64) as number[],
         );
@@ -805,9 +804,9 @@ export default function QairosHome() {
             ]),
           ),
         );
-        entropyLabel = "QRNG + браузерный CSPRNG";
+        entropyLabel = "QRNG + browser CSPRNG";
       } catch {
-        entropyLabel = "Браузерный CSPRNG; QRNG недоступен";
+        entropyLabel = "Browser CSPRNG; QRNG unavailable";
       }
       const generated = ml_dsa44.keygen(seed);
       setKeys({ ...generated, salt: hexlify(salt), entropy: entropyLabel });
@@ -815,11 +814,11 @@ export default function QairosHome() {
       setSignature(null);
       setSignatureResult("");
       setNotice(
-        `Ключ ML-DSA-44 создан локально. Источник энтропии: ${entropyLabel}. Секретная часть останется в памяти этой вкладки.`,
+        `ML-DSA-44 key generated locally. Entropy source: ${entropyLabel}. The secret key will stay in this tab's memory.`,
       );
     } catch (error) {
       setNotice(
-        error instanceof Error ? error.message : "Не удалось создать ключ.",
+        error instanceof Error ? error.message : "Could not create key.",
       );
     } finally {
       setKeyBusy(false);
@@ -828,12 +827,12 @@ export default function QairosHome() {
 
   const bindArkCommitment = () => {
     if (!keys) {
-      setNotice("Сначала создайте ML-DSA-44 ключ.");
+      setNotice("Generate an ML-DSA-44 key first.");
       return;
     }
     if (!wallet.account) {
       setWalletOpen(true);
-      setNotice("Подключите кошелек, который будет владеть commitment.");
+      setNotice("Connect the wallet that will own the commitment.");
       return;
     }
     const nextCommitment = solidityPackedKeccak256(
@@ -843,13 +842,13 @@ export default function QairosHome() {
     setKeyAccount(wallet.account);
     setCommitment(nextCommitment);
     setNotice(
-      "Commitment рассчитан локально и связан с текущим адресом кошелька.",
+      "The commitment was calculated locally and is bound to the current wallet address.",
     );
   };
 
   const saveRecoveryKit = () => {
     if (!keys || !commitment || !keyAccount) {
-      setNotice("Сначала создайте ключ и commitment.");
+      setNotice("Create a key and commitment first.");
       return;
     }
     const kit: RecoveryKit & {
@@ -868,7 +867,7 @@ export default function QairosHome() {
       entropy: keys.entropy,
       createdUtc: new Date().toISOString(),
       warning:
-        "Recovery kit позволяет предъявить доказательство владения. Храните офлайн и не передавайте посторонним.",
+        "The recovery kit lets you present proof of ownership. Store it offline and never share it.",
     };
     const url = URL.createObjectURL(
       new Blob([JSON.stringify(kit, null, 2)], { type: "application/json" }),
@@ -885,7 +884,7 @@ export default function QairosHome() {
   const loadRecoveryKit = async (file?: File) => {
     if (!file) return;
     if (file.size > 64_000) {
-      setNotice("Файл recovery kit слишком большой.");
+      setNotice("The recovery kit file is too large.");
       return;
     }
     try {
@@ -904,25 +903,25 @@ export default function QairosHome() {
         !raw.pqPublicKey ||
         !/^0x(?:[0-9a-f]{2})+$/i.test(raw.pqPublicKey)
       )
-        throw new Error("Файл не соответствует формату Qairos recovery kit.");
+        throw new Error("The file does not match the Qairos recovery kit format.");
       const expected = solidityPackedKeccak256(
         ["bytes", "bytes32", "address"],
         [raw.pqPublicKey, raw.salt, raw.account],
       );
       if (expected.toLowerCase() !== raw.commitment.toLowerCase())
         throw new Error(
-          "Ключ, salt и аккаунт не совпадают с commitment из файла.",
+          "The key, salt, and account do not match the commitment in the file.",
         );
       setRecoveryKit(raw as RecoveryKit);
       setNotice(
-        "Recovery kit проверен локально. Секретов в сеть не отправлено.",
+        "Recovery kit verified locally. No secrets were sent over the network.",
       );
     } catch (error) {
       setRecoveryKit(null);
       setNotice(
         error instanceof Error
           ? error.message
-          : "Не удалось прочитать recovery kit.",
+          : "Could not read recovery kit.",
       );
     }
   };
@@ -943,15 +942,15 @@ export default function QairosHome() {
 
   const prepareArkCommit = () => {
     if (!keys || !commitment || !keyAccount) {
-      setNotice("Сначала создайте ключ и commitment.");
+      setNotice("Create a key and commitment first.");
       return;
     }
     if (wallet.account?.toLowerCase() !== keyAccount.toLowerCase()) {
-      setNotice("Подключен другой аккаунт. Сначала переключите кошелек.");
+      setNotice("A different account is connected. Switch accounts first.");
       return;
     }
     void prepareTransaction({
-      title: "Зарегистрировать commitment Qairos Ark",
+        title: "Register Ethervance Ark commitment",
       functionName: "QairosArk.commit(bytes32)",
       contract: "ark",
       data: QAIROS_INTERFACES.ark.encodeFunctionData("commit", [commitment]),
@@ -961,9 +960,9 @@ export default function QairosHome() {
   const prepareVaultDeposit = () => {
     try {
       const amount = parseEther(depositAmount);
-      if (amount <= 0n) throw new Error("Сумма должна быть больше нуля.");
+      if (amount <= 0n) throw new Error("Amount must be greater than zero.");
       void prepareTransaction({
-        title: "Внести ETH в Qairos Vault",
+        title: "Deposit ETH into Ethervance Vault",
         functionName: "QairosVault.deposit()",
         contract: "vault",
         data: QAIROS_INTERFACES.vault.encodeFunctionData("deposit"),
@@ -973,7 +972,7 @@ export default function QairosHome() {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Введите корректную сумму ETH.",
+          : "Enter a valid ETH amount.",
       );
     }
   };
@@ -981,9 +980,9 @@ export default function QairosHome() {
   const prepareVaultWithdraw = () => {
     try {
       const amount = parseEther(withdrawAmount);
-      if (amount <= 0n) throw new Error("Сумма должна быть больше нуля.");
+      if (amount <= 0n) throw new Error("Amount must be greater than zero.");
       void prepareTransaction({
-        title: "Вывести ETH из Qairos Vault",
+        title: "Withdraw ETH from Ethervance Vault",
         functionName: "QairosVault.withdraw(uint256)",
         contract: "vault",
         data: QAIROS_INTERFACES.vault.encodeFunctionData("withdraw", [amount]),
@@ -992,26 +991,26 @@ export default function QairosHome() {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Введите корректную сумму ETH.",
+          : "Enter a valid ETH amount.",
       );
     }
   };
 
   const prepareMarketBuy = (marketId: number, yes: boolean) => {
     if (live.phase !== "live") {
-      setNotice("Нет свежего снимка Mainnet. Транзакция не подготовлена.");
+      setNotice("No fresh Mainnet snapshot. The transaction was not prepared.");
       return;
     }
     const market = live.snapshot.markets.find((item) => item.id === marketId);
     if (!market || market.settled || market.deadline * 1000 <= Date.now()) {
-      setNotice("Этот рынок закрыт или данные устарели.");
+      setNotice("This market is closed or its data is stale.");
       return;
     }
     try {
       const amount = parseEther(marketStake);
-      if (amount <= 0n) throw new Error("Ставка должна быть больше нуля.");
+      if (amount <= 0n) throw new Error("Position size must be greater than zero.");
       void prepareTransaction({
-        title: `Позиция ${yes ? "ДА" : "НЕТ"} · рынок ${marketId}`,
+        title: `${yes ? "YES" : "NO"} position · market ${marketId}`,
         functionName: "QairosMarket.buy(uint256,bool)",
         contract: "market",
         data: QAIROS_INTERFACES.market.encodeFunctionData("buy", [
@@ -1024,21 +1023,21 @@ export default function QairosHome() {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Введите корректную сумму ETH.",
+          : "Enter a valid ETH amount.",
       );
     }
   };
 
   const prepareInsurance = async () => {
     if (!wallet.provider || wallet.chainId !== MAINNET_CHAIN_ID) {
-      setNotice("Подключите кошелек к Ethereum Mainnet.");
+      setNotice("Connect your wallet to Ethereum Mainnet.");
       return;
     }
     try {
       const coverage = parseEther(insuranceCoverage);
       const years = Number(insuranceYears);
       if (coverage <= 0n || !Number.isInteger(years) || years < 1 || years > 5)
-        throw new Error("Укажите покрытие больше нуля и срок от 1 до 5 лет.");
+        throw new Error("Enter coverage greater than zero and a term from 1 to 5 years.");
       const browserProvider = new BrowserProvider(
         wallet.provider as unknown as Eip1193Provider,
         "any",
@@ -1051,7 +1050,7 @@ export default function QairosHome() {
       const premium = (await insurance.quote(coverage, years)) as bigint;
       setInsuranceQuote(formatEtherSafe(premium));
       void prepareTransaction({
-        title: "Оформить полис Qairos Insurance",
+        title: "Purchase Ethervance Insurance policy",
         functionName: "QairosInsurance.buyPolicy(uint256,uint256)",
         contract: "insurance",
         data: QAIROS_INTERFACES.insurance.encodeFunctionData("buyPolicy", [
@@ -1064,7 +1063,7 @@ export default function QairosHome() {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Не удалось рассчитать премию.",
+          : "Could not calculate premium.",
       );
     }
   };
@@ -1072,12 +1071,12 @@ export default function QairosHome() {
   const prepareRecoveryCommit = async () => {
     if (!recoveryKit || !isAddress(recoveryDestination)) {
       setNotice(
-        "Загрузите корректный recovery kit и укажите адрес назначения.",
+        "Upload a valid recovery kit and enter the destination address.",
       );
       return;
     }
     if (wallet.account?.toLowerCase() !== recoveryKit.account.toLowerCase()) {
-      setNotice("Подключите аккаунт, указанный в recovery kit.");
+      setNotice("Connect the account listed in the recovery kit.");
       return;
     }
     try {
@@ -1097,7 +1096,7 @@ export default function QairosHome() {
         recoveryKit.salt,
       )) as string;
       void prepareTransaction({
-        title: "Шаг 1 из 2 · зафиксировать восстановление",
+        title: "Step 1 of 2 · commit recovery",
         functionName: "QairosVault.commitRecovery(bytes32)",
         contract: "vault",
         data: QAIROS_INTERFACES.vault.encodeFunctionData("commitRecovery", [
@@ -1112,7 +1111,7 @@ export default function QairosHome() {
       setNotice(
         error instanceof Error
           ? error.message
-          : "Не удалось подготовить восстановление.",
+          : "Could not prepare recovery.",
       );
     }
   };
@@ -1126,12 +1125,12 @@ export default function QairosHome() {
       currentBlock <= recoveryCommitBlock
     ) {
       setNotice(
-        "Для второго шага дождитесь следующего подтвержденного блока после commitment.",
+        "For step two, wait until a block after the commitment has been confirmed.",
       );
       return;
     }
     void prepareTransaction({
-      title: "Шаг 2 из 2 · восстановить средства",
+      title: "Step 2 of 2 · recover funds",
       functionName: "QairosVault.recover(address,address,bytes,bytes32)",
       contract: "vault",
       data: QAIROS_INTERFACES.vault.encodeFunctionData("recover", [
@@ -1148,11 +1147,10 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">ЗАЩИТА · QAIROS ARK</p>
-            <h3>Подготовьте доказательство владения</h3>
+            <p className="eyebrow">PROTECTION · ETHERVANCE ARK</p>
+            <h3>Prepare proof of ownership</h3>
             <p>
-              ML-DSA-44 генерируется локально. Приватный ключ остаётся в памяти
-              вкладки и не отправляется в сеть.
+              ML-DSA-44 is generated locally. The private key stays in this tab's memory and is never sent over the network.
             </p>
           </div>
           <div className="tool-actions">
@@ -1162,62 +1160,59 @@ export default function QairosHome() {
               onClick={() => void generateKey()}
             >
               {keyBusy
-                ? "Создаём ключ…"
+                ? "Generating key…"
                 : keys
-                  ? "Создать новый ключ"
-                  : "Создать ML-DSA-44 ключ"}
+                  ? "Generate a new key"
+                  : "Generate ML-DSA-44 key"}
             </button>
             <button
               className="button"
               disabled={!keys}
               onClick={bindArkCommitment}
             >
-              Рассчитать commitment
-            </button>
+              Calculate commitment</button>
             <button
               className="button"
               disabled={!commitment}
               onClick={saveRecoveryKit}
             >
-              Скачать recovery kit
-            </button>
+              Download recovery kit</button>
           </div>
           {keys && (
             <div className="data-grid">
               <div>
-                <span>Параметр</span>
+                <span>Parameter</span>
                 <b>ML-DSA-44 · FIPS 204</b>
               </div>
               <div>
-                <span>Публичный ключ</span>
+                <span>Public key</span>
                 <b>{keys.publicKey.length.toLocaleString("en-US")} bytes</b>
               </div>
               <div>
-                <span>Секретный ключ</span>
-                <b>Только в памяти</b>
+                <span>Secret key</span>
+                <b>In memory only</b>
               </div>
               <div>
-                <span>Энтропия</span>
+                <span>Entropy</span>
                 <b>{keys.entropy}</b>
               </div>
               <div className="wide">
                 <span>Commitment</span>
                 <code>
-                  {commitment || "Сначала рассчитайте для активного адреса"}
+                  {commitment || "Calculate this for the active address first"}
                 </code>
               </div>
               <div className="wide">
-                <span>Аккаунт</span>
+                <span>Account</span>
                 <code>
-                  {keyAccount || wallet.account || "Подключите кошелек"}
+                  {keyAccount || wallet.account || "Connect a wallet"}
                 </code>
               </div>
             </div>
           )}
           {commitment && (
             <div className="warning-line">
-              Recovery kit даёт возможность предъявить pre-Moment commitment.
-              Храните файл офлайн и не передавайте его посторонним.
+              The recovery kit lets you present a pre-Moment commitment. Keep the file offline and never share it with anyone else.
             </div>
           )}
           <button
@@ -1229,8 +1224,7 @@ export default function QairosHome() {
             }
             onClick={prepareArkCommit}
           >
-            Проверить и подготовить регистрацию
-          </button>
+            Verify and prepare registration</button>
         </div>
       );
 
@@ -1238,17 +1232,15 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">ЗАЩИТА · ВОССТАНОВЛЕНИЕ</p>
-            <h3>Восстановление в два шага</h3>
+            <p className="eyebrow">PROTECTION · RECOVERY</p>
+            <h3>Two-step recovery</h3>
             <p>
-              Выберите локальный recovery kit. Файл проверяется в браузере; он
-              не загружается на сервер.
+              Choose a local recovery kit. The file is validated in your browser and is not uploaded to a server.
             </p>
           </div>
           <label className="field-label" htmlFor="kit-file">
-            Файл recovery kit (.json)
-          </label>
-          <input
+            Recovery kit file (.json)</label>
+          <inpu
             id="kit-file"
             className="file-input"
             type="file"
@@ -1258,11 +1250,11 @@ export default function QairosHome() {
           {recoveryKit && (
             <div className="data-grid">
               <div>
-                <span>Аккаунт</span>
+                <span>Account</span>
                 <b>{shortAddress(recoveryKit.account)}</b>
               </div>
               <div>
-                <span>Схема</span>
+                <span>Scheme</span>
                 <b>{recoveryKit.scheme}</b>
               </div>
               <div className="wide">
@@ -1272,9 +1264,8 @@ export default function QairosHome() {
             </div>
           )}
           <label className="field-label" htmlFor="recovery-destination">
-            Новый адрес назначения
-          </label>
-          <input
+            New destination address</label>
+          <inpu
             id="recovery-destination"
             className="text-input"
             autoComplete="off"
@@ -1291,8 +1282,7 @@ export default function QairosHome() {
               disabled={!recoveryKit || sending}
               onClick={() => void prepareRecoveryCommit()}
             >
-              Проверить и подготовить шаг 1
-            </button>
+              Verify and prepare step 1</button>
             <button
               className="button"
               disabled={
@@ -1304,14 +1294,12 @@ export default function QairosHome() {
               }
               onClick={prepareRecovery}
             >
-              Подготовить шаг 2
-            </button>
+              Prepare step 2</button>
           </div>
           {recoveryCommitBlock && (
             <p className="mono small-note">
-              Commitment: блок {recoveryCommitBlock} · текущий блок{" "}
-              {currentBlock ?? "—"}. Шаг 2 доступен после следующего блока и
-              только при выполнении условий контракта.
+              Commitment: block{recoveryCommitBlock} · current block{" "}
+              {currentBlock ?? "—"}. Step 2 is available after the next block and only if contract conditions are met.
             </p>
           )}
         </div>
@@ -1321,16 +1309,14 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">ЗАЩИТА · PQ SIGNER</p>
-            <h3>Подпишите сообщение постквантовым ключом</h3>
+            <p className="eyebrow">PROTECTION · PQ SIGNER</p>
+            <h3>Sign a message with a post-quantum key</h3>
             <p>
-              Используется тот же ключ из Ark. Подпись считается локально и не
-              равна подписи Ethereum-кошелька.
+              This uses the same key as Ark. The signature is computed locally and is not an Ethereum wallet signature.
             </p>
           </div>
           <label className="field-label" htmlFor="pq-message">
-            Сообщение
-          </label>
+            Message</label>
           <textarea
             id="pq-message"
             className="text-input message-input"
@@ -1352,11 +1338,10 @@ export default function QairosHome() {
                   keys.secretKey,
                 );
                 setSignature(nextSignature);
-                setSignatureResult("Подпись создана в этой вкладке.");
+                setSignatureResult("Signature created in this tab.");
               }}
             >
-              Создать подпись
-            </button>
+              Create signature</button>
             <button
               className="button"
               disabled={!keys || !signature}
@@ -1372,26 +1357,25 @@ export default function QairosHome() {
                 );
                 setSignatureResult(
                   valid
-                    ? "Подпись действительна для этого сообщения."
-                    : "Подпись не совпадает с сообщением или ключом.",
+                    ? "The signature is valid for this message."
+                    : "The signature does not match the message or key.",
                 );
               }}
             >
-              Проверить подпись
-            </button>
+              Verify signature</button>
           </div>
           {signature && (
             <div className="data-grid">
               <div>
-                <span>Размер подписи</span>
+                <span>Signature size</span>
                 <b>{signature.length.toLocaleString("en-US")} bytes</b>
               </div>
               <div>
-                <span>Результат проверки</span>
-                <b>{signatureResult || "Ожидает проверки"}</b>
+                <span>Verification result</span>
+                <b>{signatureResult || "Awaiting verification"}</b>
               </div>
               <div className="wide">
-                <span>Подпись · hex</span>
+                <span>Signature · hex</span>
                 <code className="signature-preview">{hexlify(signature)}</code>
               </div>
             </div>
@@ -1403,21 +1387,20 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">ЗАЩИТА · QAIROS VAULT</p>
-            <h3>Баланс и операции хранилища</h3>
+            <p className="eyebrow">PROTECTION · ETHERVANCE VAULT</p>
+            <h3>Vault balance and operations</h3>
             <p>
-              Баланс читается через подключенный Mainnet provider. Перед записью
-              будет симуляция, оценка газа и отдельное подтверждение в кошельке.
+              The balance is read through the connected Mainnet provider. Writes are simulated and gas-estimated before a separate wallet confirmation.
             </p>
           </div>
           <div className="vault-balance">
-            <span>Ваш баланс в Vault</span>
+            <span>Your Vault balance</span>
             <b>{vaultBalance} ETH</b>
           </div>
           <div className="form-grid">
             <label>
-              <span>Внести ETH</span>
-              <input
+              <span>Deposit ETH</span>
+              <inpu
                 className="text-input"
                 inputMode="decimal"
                 value={depositAmount}
@@ -1429,11 +1412,10 @@ export default function QairosHome() {
               disabled={sending}
               onClick={prepareVaultDeposit}
             >
-              Подготовить депозит
-            </button>
+              Prepare deposit</button>
             <label>
-              <span>Вывести ETH</span>
-              <input
+              <span>Withdraw ETH</span>
+              <inpu
                 className="text-input"
                 inputMode="decimal"
                 value={withdrawAmount}
@@ -1445,13 +1427,11 @@ export default function QairosHome() {
               disabled={sending}
               onClick={prepareVaultWithdraw}
             >
-              Подготовить вывод
-            </button>
+              Prepare withdrawal</button>
           </div>
           {statusData?.vaultBreakerTripped && (
             <div className="warning-line">
-              Breaker активен. Контракт может отклонить вывод; симуляция
-              проверит это до отправки.
+              The breaker is active. The contract may reject withdrawals; simulation checks this before sending.
             </div>
           )}
         </div>
@@ -1461,17 +1441,15 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">РЫНКИ · ETHEREUM MAINNET</p>
-            <h3>Публичные прогнозы</h3>
+            <p className="eyebrow">MARKETS · ETHEREUM MAINNET</p>
+            <h3>Public forecasts</h3>
             <p>
-              Пулы считываются из проверенного live status API. Это реальные
-              Mainnet позиции, а не бумажная симуляция.
+              Pools are read from the verified live status API. These are real Mainnet positions, not a paper-trading simulation.
             </p>
           </div>
           <label className="field-label" htmlFor="market-stake">
-            Размер позиции в ETH
-          </label>
-          <input
+            Position size in ETH</label>
+          <inpu
             id="market-stake"
             className="text-input amount-input"
             inputMode="decimal"
@@ -1480,19 +1458,17 @@ export default function QairosHome() {
           />
           {live.phase !== "live" ? (
             <p className="warning-line">
-              Нет свежего снимка рынка. Торговые действия отключены.
-            </p>
+              No fresh market snapshot. Trading actions are disabled.</p>
           ) : (
             <div className="market-list">
               {markets.map((market) => (
                 <article className="market-row" key={market.id}>
                   <div>
                     <b>
-                      Рынок {market.id} · {market.bits} бит
-                    </b>
+                      Market{market.id} · {market.bits} bits</b>
                     <span>
-                      До {formatDate(market.deadline)} · пул ДА{" "}
-                      {formatEtherSafe(market.yesPoolWei)} ETH / НЕТ{" "}
+                      Until{formatDate(market.deadline)} · YES pool{" "}
+                      {formatEtherSafe(market.yesPoolWei)} ETH / NO{" "}
                       {formatEtherSafe(market.noPoolWei)} ETH
                     </span>
                   </div>
@@ -1502,15 +1478,13 @@ export default function QairosHome() {
                       disabled={market.settled || sending}
                       onClick={() => prepareMarketBuy(market.id, true)}
                     >
-                      Да
-                    </button>
+                      Yes</button>
                     <button
                       className="button"
                       disabled={market.settled || sending}
                       onClick={() => prepareMarketBuy(market.id, false)}
                     >
-                      Нет
-                    </button>
+                      No</button>
                   </div>
                 </article>
               ))}
@@ -1523,17 +1497,16 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">РЫНКИ · QAIROS INSURANCE</p>
-            <h3>Рассчитайте покрытие</h3>
+            <p className="eyebrow">MARKETS · ETHERVANCE INSURANCE</p>
+            <h3>Calculate coverage</h3>
             <p>
-              Котировка читается из контракта; покупка полиса потребует явного
-              review и подтверждения в кошельке.
+              The quote is read from the contract. Buying a policy requires an explicit review and wallet confirmation.
             </p>
           </div>
           <div className="form-grid">
             <label>
-              <span>Покрытие в ETH</span>
-              <input
+              <span>Coverage in ETH</span>
+              <inpu
                 className="text-input"
                 inputMode="decimal"
                 value={insuranceCoverage}
@@ -1541,8 +1514,8 @@ export default function QairosHome() {
               />
             </label>
             <label>
-              <span>Срок, лет</span>
-              <select
+              <span>Term, years</span>
+              <selec
                 className="text-input"
                 value={insuranceYears}
                 onChange={(event) => setInsuranceYears(event.target.value)}
@@ -1561,19 +1534,18 @@ export default function QairosHome() {
               disabled={sending}
               onClick={() => void prepareInsurance()}
             >
-              Рассчитать и проверить полис
-            </button>
+              Calculate and review policy</button>
             {insuranceQuote && (
-              <span className="quote-value">Премия: {insuranceQuote} ETH</span>
+              <span className="quote-value">Premium:{insuranceQuote} ETH</span>
             )}
           </div>
           <p className="small-note">
-            Свободный капитал по API:{" "}
+            Free capital via API:{" "}
             {statusData
               ? formatEtherSafe(statusData.insuranceFreeCapitalWei)
               : "—"}{" "}
-            ETH. Если средств в пуле недостаточно, контракт отклонит операцию на
-            симуляции.
+
+            ETH. If the pool has insufficient funds, the contract will reject the operation during simulation.
           </p>
         </div>
       );
@@ -1582,17 +1554,16 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">РАЗРАБОТЧИКАМ · QAIROSGUARD</p>
-            <h3>Соберите исходный шаблон</h3>
+            <p className="eyebrow">FOR DEVELOPERS · ETHERVANCE GUARD</p>
+            <h3>Generate a source template</h3>
             <p>
-              Файл генерируется локально. Его необходимо проверить, покрыть
-              тестами и независимо аудитировать до deployment.
+              The file is generated locally. Review it, add tests, and obtain an independent audit before deployment.
             </p>
           </div>
           <div className="form-grid">
             <label>
-              <span>Имя контракта</span>
-              <input
+              <span>Contract name</span>
+              <inpu
                 className="text-input"
                 value={guardName}
                 maxLength={48}
@@ -1602,8 +1573,8 @@ export default function QairosHome() {
               />
             </label>
             <label>
-              <span>Уровень срабатывания</span>
-              <input
+              <span>Trigger level</span>
+              <inpu
                 className="text-input"
                 type="number"
                 min="1"
@@ -1621,8 +1592,7 @@ export default function QairosHome() {
             <code>{`pragma solidity ^0.8.28;\n\nimport {QairosGuard} from "./QairosGuard.sol";\n\ncontract ${guardName || "QuantumSafeVault"} is QairosGuard {\n    constructor(IQairosOracle oracle_)\n        QairosGuard(oracle_, ${guardLevel}) {}\n\n    function withdraw(uint256 amount) external quantumSafe {\n        // Implement reviewed vault logic.\n    }\n}`}</code>
           </pre>
           <button className="button button-primary" onClick={downloadGuard}>
-            Скачать Solidity
-          </button>
+            Download Solidity</button>
         </div>
       );
 
@@ -1630,33 +1600,29 @@ export default function QairosHome() {
       return (
         <div className="tool-body">
           <div className="tool-heading">
-            <p className="eyebrow">МОНИТОР · QAIROS CANARY</p>
-            <h3>Криптографическая лестница</h3>
+            <p className="eyebrow">MONITOR · ETHERVANCE CANARY</p>
+            <h3>Cryptographic ladder</h3>
             <p>
-              Статус каждой ступени взят из последнего проверенного Mainnet
-              snapshot.
+              Each rung's status comes from the latest verified Mainnet snapshot.
             </p>
           </div>
           {live.phase !== "live" ? (
             <p className="warning-line">
-              Нет актуального снимка. Статус ступеней неизвестен.
-            </p>
+              No current snapshot. Rung status is unknown.</p>
           ) : (
             <div className="rung-list">
               {live.snapshot.rungs.map((rung) => (
                 <div className="rung-row" key={rung.id}>
-                  <b>{String(rung.bits).padStart(3, "0")} бит</b>
-                  <span>{rung.armed ? "Вооружена" : "Учебная"}</span>
-                  <span>{rung.broken ? "Решена" : "Цела"}</span>
+                  <b>{String(rung.bits).padStart(3, "0")} bits</b>
+                  <span>{rung.armed ? "Armed" : "Practice"}</span>
+                  <span>{rung.broken ? "Solved" : "Intact"}</span>
                   <span>{formatEtherSafe(rung.bountyWei)} ETH</span>
                 </div>
               ))}
             </div>
           )}
           <p className="small-note">
-            Учебный решатель в этой сборке не подменяет доказательство
-            криптографического взлома. Отправка canary claim доступна только
-            после подготовки проверяемого решения.
+            The demo solver does not stand in for proof of a cryptographic break. A Canary claim can be submitted only after preparing a verifiable solution.
           </p>
         </div>
       );
@@ -1665,13 +1631,12 @@ export default function QairosHome() {
       <div className="tool-body">
         <div className="tool-heading">
           <p className="eyebrow">ETHEREUM MAINNET · READ-ONLY</p>
-          <h3>Сигнал и рекомендуемое действие</h3>
+          <h3>Signal and recommended action</h3>
           <p>
-            Панель обновляет snapshot каждые 30 секунд. При отсутствии или
-            устаревании данных уровень не подменяется безопасным значением.
+            The dashboard refreshes the snapshot every 30 seconds. Missing or stale data is never replaced with a safe-looking value.
           </p>
         </div>
-        <div className="threat-scale" aria-label="Уровни угрозы">
+        <div className="threat-scale" aria-label="Threat levels">
           {[0, 1, 2, 3, 4, 5].map((value) => (
             <span
               className={
@@ -1686,15 +1651,15 @@ export default function QairosHome() {
           ))}
         </div>
         <div className="response-box">
-          <span>РЕКОМЕНДУЕМЫЙ ПУТЬ</span>
+          <span>RECOMMENDED RESPONSE</span>
           <p>
             {!statusData
-              ? "Нет проверенного сигнала. Не делайте предположений о безопасности."
+              ? "No verified signal. Do not make assumptions about safety."
               : statusData.threatLevel === 0
-                ? "Продолжайте мониторинг. Заранее проверьте доступ к восстановлению и сохранность recovery kit."
+                ? "Keep monitoring. Verify recovery access and protect your recovery kit in advance."
                 : statusData.threatLevel < 3
-                  ? "Проверьте открытые ключи, адреса и готовность восстановления. Не полагайтесь на один источник данных."
-                  : "Критический сигнал. Приостановите чувствительные операции и согласуйте действия с командой безопасности."}
+                  ? "Check public keys, addresses, and recovery readiness. Do not rely on a single data source."
+                  : "Critical signal. Pause sensitive operations and coordinate with your security team."}
           </p>
         </div>
       </div>
@@ -1704,18 +1669,17 @@ export default function QairosHome() {
   const currentTool = toolList.find(([id]) => id === activeTool) || toolList[0];
 
   return (
-    <EnglishContent>
     <main>
       <header className="site-header">
-        <nav className="nav-shell" aria-label="Главная навигация">
+        <nav className="nav-shell" aria-label="Main navigation">
           <a className="brand" href="#overview">
             <span className="orbit-mark" aria-hidden="true" />
-            QAIROS
+            ETHERVANCE
           </a>
           <div className="nav-links">
-            <a href="#how">Принцип работы</a>
-            <a href="#tools">Инструменты</a>
-            <a href="#technology">Технологии</a>
+            <a href="#how">How it works</a>
+            <a href="#tools">Tools</a>
+            <a href="#technology">Technology</a>
             <a href="#faq">FAQ</a>
           </div>
           <div className="header-actions">
@@ -1723,13 +1687,13 @@ export default function QairosHome() {
               className="icon-button theme-button"
               title={
                 theme === "light"
-                  ? "Включить тёмную тему"
-                  : "Включить светлую тему"
+                  ? "Switch to dark theme"
+                  : "Switch to light theme"
               }
               aria-label={
                 theme === "light"
-                  ? "Включить тёмную тему"
-                  : "Включить светлую тему"
+                  ? "Switch to dark theme"
+                  : "Switch to light theme"
               }
               onClick={toggleTheme}
             >
@@ -1741,13 +1705,13 @@ export default function QairosHome() {
             >
               {wallet.connected
                 ? shortAddress(wallet.account)
-                : "Подключить кошелек"}
+                : "Connect wallet"}
             </button>
           </div>
         </nav>
         <div className="mobile-nav">
-          <a href="#how">Принцип</a>
-          <a href="#tools">Инструменты</a>
+          <a href="#how">Overview</a>
+          <a href="#tools">Tools</a>
           <a href="#faq">FAQ</a>
         </div>
       </header>
@@ -1758,7 +1722,7 @@ export default function QairosHome() {
             <span>{notice}</span>
             <button
               className="notice-close"
-              aria-label="Закрыть уведомление"
+              aria-label="Dismiss notification"
               onClick={() => setNotice("")}
             >
               ×
@@ -1768,25 +1732,23 @@ export default function QairosHome() {
 
         <section className="hero-grid" id="overview">
           <div className="hero-copy">
-            <p className="eyebrow">QRS-01 // КВАНТОВОЕ РАННЕЕ ПРЕДУПРЕЖДЕНИЕ</p>
+            <p className="eyebrow">QRS-01 // QUANTUM EARLY WARNING</p>
             <h1>
-              Подготовьтесь к <span>моменту Qairos.</span>
+              Prepare for the<span>quantum shift.</span>
             </h1>
             <p className="hero-lead">
-              Слой раннего предупреждения и защиты для Ethereum. Следите за
-              сигналом, подготовьте действия и сохраните контроль над ключами.
+              An early-warning and protection layer for Ethereum. Monitor the signal, prepare a response, and keep control of your keys.
             </p>
             <div className="hero-actions">
               <a className="button button-primary" href="#console">
-                Открыть панель
-              </a>
+                Open dashboard</a>
               <a className="button" href="#how">
-                Как это работает <span aria-hidden="true">↘</span>
+                How it works<span aria-hidden="true">↘</span>
               </a>
             </div>
             <div className="contract-line">
               <div>
-                <span className="eyebrow">$QRS · АДРЕС КОНТРАКТА</span>
+                <span className="eyebrow">$QRS · CONTRACT ADDRESS</span>
                 <code>{QAIROS_ADDRESSES.oracle}</code>
               </div>
               <button
@@ -1795,13 +1757,12 @@ export default function QairosHome() {
                   void navigator.clipboard
                     .writeText(QAIROS_ADDRESSES.oracle)
                     .then(
-                      () => setNotice("Адрес QairosOracle скопирован."),
-                      () => setNotice("Буфер обмена недоступен."),
+                      () => setNotice("Oracle contract address copied."),
+                      () => setNotice("Clipboard unavailable."),
                     )
                 }
               >
-                Копировать
-              </button>
+                Copy</button>
             </div>
             <div className="community-links">
               <a
@@ -1823,19 +1784,19 @@ export default function QairosHome() {
           <div className="hero-status">
             <div className="metadata-grid">
               <div>
-                <span>КЛАССИФИКАЦИЯ</span>
-                <b>ОТКРЫТЫЙ КОД / MIT</b>
+                <span>LICENSE</span>
+                <b>OPEN SOURCE / MIT</b>
               </div>
               <div>
-                <span>ДОКУМЕНТ</span>
+                <span>DOCUMENTATION</span>
                 <b>QRS-01-2026-10-C</b>
               </div>
               <div>
-                <span>СЕТЬ</span>
+                <span>NETWORK</span>
                 <b>Ethereum Mainnet · chain 1</b>
               </div>
               <div>
-                <span>ПОСЛЕДНИЙ СНИМОК</span>
+                <span>LATEST SNAPSHOT</span>
                 <b>{statusData ? formatDate(statusData.observedAtUtc) : "—"}</b>
               </div>
             </div>
@@ -1845,8 +1806,8 @@ export default function QairosHome() {
                   {live.phase === "live"
                     ? `MAINNET · BLOCK ${statusData!.blockNumber.toLocaleString("en-US")}`
                     : live.phase === "loading"
-                      ? "ПОДКЛЮЧАЕМСЯ К MAINNET"
-                      : "СИГНАЛ НЕИЗВЕСТЕН"}
+                      ? "CONNECTING TO MAINNET"
+                      : "SIGNAL UNKNOWN"}
                 </span>
                 <div className="live-level">
                   {statusData
@@ -1856,20 +1817,20 @@ export default function QairosHome() {
                 <b>
                   {statusData
                     ? [
-                        "НОМИНАЛЬНО",
-                        "НАБЛЮДЕНИЕ",
-                        "НАБЛЮДЕНИЕ",
-                        "КРИТИЧЕСКИЙ",
-                        "КРИТИЧЕСКИЙ",
-                        "КРИТИЧЕСКИЙ",
+                        "NOMINAL",
+                        "MONITORING",
+                        "MONITORING",
+                        "CRITICAL",
+                        "CRITICAL",
+                        "CRITICAL",
                       ][statusData.threatLevel]
-                    : "НЕТ ДАННЫХ"}
+                    : "NO DATA"}
                 </b>
                 <p>
                   {live.phase === "live"
-                    ? `${statusData!.rungCount} ступеней · ${statusData!.marketCount} рынка · ${statusData!.contracts.filter((item) => item.deployed).length}/6 контрактов`
+                    ? `${statusData!.rungCount} rungs · ${statusData!.marketCount} markets · ${statusData!.contracts.filter((item) => item.deployed).length}/6 contracts`
                     : live.phase === "loading"
-                      ? "Получаем подтвержденный снимок"
+                      ? "Fetching a verified snapshot"
                       : live.message}
                 </p>
               </div>
@@ -1888,12 +1849,12 @@ export default function QairosHome() {
                   }
                 />
                 {live.phase === "live"
-                  ? "Данные актуальны"
+                  ? "Data is current"
                   : live.phase === "loading"
-                    ? "Загрузка"
-                    : "Данные недоступны"}
+                    ? "Loading"
+                    : "Data unavailable"}
               </span>
-              <span>Автообновление · 30 сек.</span>
+              <span>Auto-refresh · 30 sec.</span>
               <button
                 className="status-refresh"
                 disabled={statusRefreshing}
@@ -1907,24 +1868,24 @@ export default function QairosHome() {
                   }
                   aria-hidden="true"
                 />
-                {statusRefreshing ? "Проверяем Mainnet…" : "Обновить сейчас"}
+                {statusRefreshing ? "Checking Mainnet…" : "Refresh now"}
               </button>
             </div>
           </div>
         </section>
 
-        <section className="metrics-strip" aria-label="Показатели Mainnet">
+        <section className="metrics-strip" aria-label="Mainnet metrics">
           <div>
             <b>
               {statusData
                 ? `${statusData.rungs.filter((rung) => rung.armed && !rung.broken).length}/${armedRungs.length || 5}`
                 : "—"}
             </b>
-            <span>вооружённых ступеней целы</span>
+            <span>armed rungs intact</span>
           </div>
           <div>
             <b>{statusData ? statusData.markets.length : "—"}</b>
-            <span>рынка прогнозов</span>
+            <span>prediction markets</span>
           </div>
           <div>
             <b>
@@ -1933,7 +1894,7 @@ export default function QairosHome() {
                 : "—"}
               /6
             </b>
-            <span>контрактов развернуто</span>
+            <span>contracts deployed</span>
           </div>
           <div>
             <b>
@@ -1944,7 +1905,7 @@ export default function QairosHome() {
                 : "—"}
             </b>
             <span>
-              {wallet.connected ? wallet.walletName : "кошелек не подключен"}
+              {wallet.connected ? wallet.walletName : "wallet not connected"}
             </span>
           </div>
         </section>
@@ -1952,16 +1913,15 @@ export default function QairosHome() {
         <section className="console-section" id="console">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">РАБОЧАЯ ПАНЕЛЬ · ЭФИРИУМ</p>
-              <h2>Один сигнал. Понятный следующий шаг.</h2>
+              <p className="eyebrow">LIVE DASHBOARD · ETHEREUM</p>
+              <h2>One signal. A clear next step.</h2>
             </div>
             <p>
-              Чтение состояния доступно без кошелька. Записи в Mainnet требуют
-              аутентифицированной сессии и подтверждения в кошельке.
+              Read-only status is available without a wallet. Mainnet writes require an authenticated session and wallet confirmation.
             </p>
           </div>
           <div className="console-frame">
-            <aside className="tool-nav" aria-label="Инструменты Qairos">
+            <aside className="tool-nav" aria-label="Ethervance tools">
               {toolList.map(([id, label, description], index) => (
                 <button
                   className={
@@ -1990,20 +1950,17 @@ export default function QairosHome() {
                   {wallet.connected
                     ? wallet.chainId === 1
                       ? "ETHEREUM MAINNET"
-                      : `СЕТЬ ${wallet.chainId}`
-                    : "БЕЗ КОШЕЛЬКА"}
+                      : `NETWORK ${wallet.chainId}`
+                    : "NO WALLET"}
                 </span>
               </div>
               {renderTool()}
             </section>
           </div>
           <div className="compliance-note">
-            <b>Безопасность операций</b>
+            <b>Transaction safety</b>
             <span>
-              Все записи требуют совпадения сессии и активного аккаунта,
-              Mainnet, успешной симуляции, оценки газа и отдельного
-              подтверждения в кошельке. Исходные контракты экспериментальные и
-              не проходили независимый аудит.
+              Every write requires a matching session and active account, Mainnet, a successful simulation, a gas estimate, and separate wallet confirmation. The contracts are experimental and unaudited.
             </span>
           </div>
         </section>
@@ -2011,12 +1968,11 @@ export default function QairosHome() {
         <section id="how" className="steps-section">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">ПРИНЦИП РАБОТЫ</p>
-              <h2>Сначала датчик. Затем защита.</h2>
+              <p className="eyebrow">HOW IT WORKS</p>
+              <h2>Detect first. Protect next.</h2>
             </div>
             <p>
-              Публичные криптографические испытания формируют наблюдаемый
-              сигнал. Владельцы и протоколы заранее выбирают свои действия.
+              Public cryptographic challenges provide an observable signal. Owners and protocols decide in advance how they will respond.
             </p>
           </div>
           <div className="steps-grid">
@@ -2024,27 +1980,27 @@ export default function QairosHome() {
               [
                 "01",
                 "Canary",
-                "Криптографические испытания дают публичный сигнал о возможностях атакующего.",
+                "Cryptographic challenges provide a public signal about an attacker's capabilities.",
               ],
               [
                 "02",
                 "Oracle",
-                "Подтвержденное решение вооруженной ступени повышает уровень угрозы в контракте.",
+                "A verified solution to an armed rung raises the threat level in the contract.",
               ],
               [
                 "03",
                 "Guard",
-                "Защищенные контракты ограничивают чувствительные действия при заданном пороге.",
+                "Protected contracts restrict sensitive actions at a defined threshold.",
               ],
               [
                 "04",
                 "Ark",
-                "Заранее сохраненное доказательство позволяет подготовить путь восстановления.",
+                "A proof saved in advance helps prepare a recovery path.",
               ],
               [
                 "05",
-                "Рынки",
-                "Прогнозы и страхование используют общий сигнал Oracle.",
+                "Markets",
+                "Predictions and insurance use the same Oracle signal.",
               ],
             ].map(([number, title, description]) => (
               <article className="step-item" key={number}>
@@ -2059,12 +2015,11 @@ export default function QairosHome() {
         <section className="modules-section" id="tools">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">ИНСТРУМЕНТЫ</p>
-              <h2>Семь модулей. Одна система.</h2>
+              <p className="eyebrow">TOOLS</p>
+              <h2>Seven modules. One system.</h2>
             </div>
             <p>
-              Откройте модуль в панели: читайте живые данные, готовьте ключи и
-              проверяйте операции до подписи.
+              Open a dashboard module to read live data, prepare keys, and review operations before signing.
             </p>
           </div>
           <div className="module-grid">
@@ -2074,47 +2029,47 @@ export default function QairosHome() {
                 key={id}
                 onClick={() => {
                   setActiveTool(id);
-                  document
+                  documen
                     .getElementById("console")
                     ?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
                 <span className="eyebrow">
                   {String(index + 1).padStart(2, "0")} /{" "}
-                  {index < 3 ? "ЗАЩИТА" : "МОНИТОРИНГ"}
+                  {index < 3 ? "PROTECTION" : "MONITORING"}
                 </span>
                 <b>{name}</b>
                 <p>{description}</p>
-                <span className="module-link">ОТКРЫТЬ МОДУЛЬ ↗</span>
+                <span className="module-link">OPEN MODULE ↗</span>
               </button>
             ))}
           </div>
         </section>
 
         <section className="usecase-section">
-          <p className="eyebrow">ДЛЯ ТЕХ, КТО КОНТРОЛИРУЕТ КЛЮЧИ</p>
-          <h2>От личного кошелька до казначейства протокола.</h2>
+          <p className="eyebrow">FOR THOSE WHO CONTROL THE KEYS</p>
+          <h2>From personal wallets to protocol treasuries.</h2>
           <div className="usecase-grid">
             {[
               [
-                "ДОЛГОСРОЧНЫЕ ВЛАДЕЛЬЦЫ",
-                "Подготовьте независимый путь восстановления для аккаунтов с опубликованным ключом.",
+                "LONG-TERM HOLDERS",
+                "Prepare an independent recovery path for accounts with a published key.",
               ],
               [
-                "DAO-КАЗНАЧЕЙСТВА",
-                "Определите, как чувствительные операции реагируют на рост риска.",
+                "DAO TREASURIES",
+                "Define how sensitive operations respond as risk increases.",
               ],
               [
-                "DEFI-ПРОТОКОЛЫ",
-                "Планируйте остановку опасных маршрутов по публичному сигналу.",
+                "DEFI PROTOCOLS",
+                "Plan to pause risky routes based on a public signal.",
               ],
               [
-                "КАСТОДИАНЫ",
-                "Отслеживайте открытые ключи и документируйте готовность восстановления.",
+                "CUSTODIANS",
+                "Track public keys and document recovery readiness.",
               ],
               [
-                "ИССЛЕДОВАТЕЛИ",
-                "Изучайте публичные задачи и публикуйте воспроизводимые результаты.",
+                "RESEARCHERS",
+                "Study public challenges and publish reproducible results.",
               ],
             ].map(([title, text]) => (
               <article key={title}>
@@ -2128,24 +2083,24 @@ export default function QairosHome() {
         <section className="technology-section" id="technology">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">ТЕХНОЛОГИИ</p>
-              <h2>Стандарты вместо обещаний.</h2>
+              <p className="eyebrow">TECHNOLOGY</p>
+              <h2>Standards over promises.</h2>
             </div>
-            <p>Открытые спецификации и исходники можно проверять независимо.</p>
+            <p>Open specifications and source code can be independently verified.</p>
           </div>
           <div className="tech-table-wrap">
             <table className="tech-table">
               <thead>
                 <tr>
-                  <th>Компонент</th>
-                  <th>Назначение</th>
-                  <th>Источник</th>
+                  <th>Component</th>
+                  <th>Purpose</th>
+                  <th>Source</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>ML-DSA-44</td>
-                  <td>Постквантовые ключи и подписи</td>
+                  <td>Post-quantum keys and signatures</td>
                   <td>
                     <a
                       href="https://csrc.nist.gov/pubs/fips/204/final"
@@ -2158,7 +2113,7 @@ export default function QairosHome() {
                 </tr>
                 <tr>
                   <td>SEC 2</td>
-                  <td>Кривые лестницы Canary</td>
+                  <td>Canary ladder curves</td>
                   <td>
                     <a
                       href="https://www.secg.org/sec2-v2.pdf"
@@ -2171,7 +2126,7 @@ export default function QairosHome() {
                 </tr>
                 <tr>
                   <td>keccak256</td>
-                  <td>Commitments и события</td>
+                  <td>Commitments and events</td>
                   <td>
                     <a
                       href="https://ethereum.org/developers/docs/smart-contracts/"
@@ -2184,7 +2139,7 @@ export default function QairosHome() {
                 </tr>
                 <tr>
                   <td>Qairos EVM</td>
-                  <td>Официальные адреса Mainnet и Solidity-контракты</td>
+                  <td>Official Mainnet addresses and Solidity contracts</td>
                   <td>
                     <a
                       href="https://github.com/Qairos-app/qairos-ethereum-contracts"
@@ -2199,36 +2154,35 @@ export default function QairosHome() {
             </table>
           </div>
           <p className="security-disclaimer">
-            Код и контракты не прошли независимый аудит. Мониторинг не делает
-            обычные EVM-подписи постквантовыми.
+            The code and contracts have not undergone an independent audit. Monitoring does not make standard EVM signatures post-quantum.
           </p>
         </section>
 
         <section className="roadmap-section">
-          <p className="eyebrow">ДОРОЖНАЯ КАРТА</p>
-          <h2>От прототипа к L1.</h2>
+          <p className="eyebrow">ROADMAP</p>
+          <h2>From prototype to L1.</h2>
           <div className="roadmap-grid">
             {[
               [
-                "ЭТАП 1 · ГОТОВО",
-                "Прототип",
-                "Контракты, тесты и локальный запуск.",
+                "PHASE 1 · COMPLETE",
+                "Prototype",
+                "Contracts, tests, and local deployment.",
               ],
               [
-                "ЭТАП 2",
+                "PHASE 2",
                 "Sepolia",
-                "Публичный тестнет, учебные bounty и кошелек.",
+                "Public testnet, practice bounties, and wallet.",
               ],
               [
-                "ЭТАП 3",
-                "Независимый аудит",
-                "Проверка контрактов и математики кривых.",
+                "PHASE 3",
+                "Independent audit",
+                "Review of contracts and curve mathematics.",
               ],
-              ["ЭТАП 4", "Ethereum Mainnet", "Развертывание и запуск рынков."],
+              ["PHASE 4", "Ethereum Mainnet", "Deployment and market launch."],
               [
-                "ЭТАП 5",
-                "PQ-кошельки",
-                "Постквантовая проверка через account abstraction.",
+                "PHASE 5",
+                "PQ wallets",
+                "Post-quantum verification via account abstraction.",
               ],
             ].map(([phase, title, description], index) => (
               <article
@@ -2245,8 +2199,8 @@ export default function QairosHome() {
 
         <section className="faq-section" id="faq">
           <div>
-            <p className="eyebrow">ВОПРОСЫ И ОТВЕТЫ</p>
-            <h2>Коротко о важном.</h2>
+            <p className="eyebrow">FAQ</p>
+            <h2>The essentials, briefly.</h2>
           </div>
           <div>
             {faq.map(([question, answer]) => (
@@ -2264,15 +2218,13 @@ export default function QairosHome() {
         <section className="final-cta">
           <div>
             <p className="eyebrow">QRS-01 / ETHEREUM MAINNET</p>
-            <h2>Будьте готовы до момента Qairos.</h2>
+            <h2>Be ready before the quantum shift.</h2>
             <p>
-              Подготовьте recovery kit и проверьте действия до того, как сигнал
-              станет критическим.
+              Prepare a recovery kit and review your response before the signal becomes critical.
             </p>
           </div>
           <a href="#console" className="button button-primary">
-            Открыть панель ↗
-          </a>
+            Open dashboard ↗</a>
         </section>
       </div>
 
@@ -2280,25 +2232,23 @@ export default function QairosHome() {
         <div className="footer-main">
           <a className="brand" href="#overview">
             <span className="orbit-mark" aria-hidden="true" />
-            QAIROS
+            ETHERVANCE
           </a>
           <p>
-            Раннее предупреждение и инструменты постквантовой готовности для
-            Ethereum.
+            Early warning and post-quantum readiness tools for Ethereum.
           </p>
           <span className="eyebrow">QRS-01 · MIT · 2026</span>
         </div>
         <div className="footer-links">
-          <a href="#console">Панель</a>
-          <a href="#tools">Инструменты</a>
-          <a href="#technology">Технологии</a>
+          <a href="#console">Dashboard</a>
+          <a href="#tools">Tools</a>
+          <a href="#technology">Technology</a>
           <a
             href="https://github.com/Qairos-app"
             target="_blank"
             rel="noreferrer"
           >
-            Исходный код ↗
-          </a>
+            Source code ↗</a>
         </div>
       </footer>
 
@@ -2315,12 +2265,12 @@ export default function QairosHome() {
           <div>
             <p className="eyebrow">EIP-6963 / EIP-1193</p>
             <h2 id="wallet-dialog-title">
-              {wallet.connected ? "Ваш кошелек" : "Подключить кошелек"}
+              {wallet.connected ? "Your wallet" : "Connect wallet"}
             </h2>
           </div>
           <button
             className="icon-button"
-            aria-label="Закрыть"
+            aria-label="Close"
             onClick={() => setWalletOpen(false)}
           >
             ×
@@ -2330,11 +2280,11 @@ export default function QairosHome() {
           {wallet.connected ? (
             <>
               <div className="wallet-details">
-                <span>Провайдер</span>
+                <span>Provider</span>
                 <b>{wallet.walletName}</b>
-                <span>Аккаунт</span>
+                <span>Account</span>
                 <code>{wallet.account}</code>
-                <span>Сеть</span>
+                <span>Network</span>
                 <b
                   className={wallet.chainId === 1 ? "state-good" : "state-warn"}
                 >
@@ -2349,30 +2299,28 @@ export default function QairosHome() {
                   disabled={wallet.busy}
                   onClick={() => void wallet.switchToMainnet().catch(() => {})}
                 >
-                  Переключить на Ethereum Mainnet
-                </button>
+                  Switch to Ethereum Mainnet</button>
               )}
               <div className="session-box">
-                <span>Сессия Qairos</span>
+                <span>Ethervance session</span>
                 <b>
                   {sessionReady
-                    ? `Выполнен вход · до ${formatDate(walletSession!.expiresAt)}`
-                    : "Не выполнен вход"}
+                    ? `Signed in · expires ${formatDate(walletSession!.expiresAt)}`
+                    : "Not signed in"}
                 </b>
                 {sessionReady ? (
                   <button
                     className="button button-small"
                     onClick={() => void signOut()}
                   >
-                    Выйти
-                  </button>
+                    Sign out</button>
                 ) : (
                   <button
                     className="button button-primary button-small"
                     disabled={authBusy || wallet.chainId !== 1}
                     onClick={() => void signIn()}
                   >
-                    {authBusy ? "Подписываем…" : "Войти без газа"}
+                    {authBusy ? "Signing…" : "Sign in (no gas)"}
                   </button>
                 )}
               </div>
@@ -2386,8 +2334,7 @@ export default function QairosHome() {
                   } else wallet.disconnect();
                 }}
               >
-                Забыть кошелек на этом сайте
-              </button>
+                Forget this wallet on this site</button>
             </>
           ) : (
             <>
@@ -2397,7 +2344,7 @@ export default function QairosHome() {
               </p>
               {process.env.NEXT_PUBLIC_PRIVY_APP_ID ? (
                 <div className="privy-connect-wrap">
-                  <PrivyWalletConnect
+                  <PrivyWalletConnec
                     onStart={() => setWalletOpen(false)}
                     onConnected={() => setWalletOpen(false)}
                   />
@@ -2437,13 +2384,13 @@ export default function QairosHome() {
           <>
             <header className="dialog-header">
               <div>
-                <p className="eyebrow">ПРОВЕРКА ПЕРЕД ОТПРАВКОЙ</p>
+                <p className="eyebrow">REVIEW BEFORE SENDING</p>
                 <h2 id="review-title">{review.title}</h2>
               </div>
               <button
                 className="icon-button"
                 disabled={sending}
-                aria-label="Закрыть"
+                aria-label="Close"
                 onClick={() => setReview(null)}
               >
                 ×
@@ -2451,36 +2398,35 @@ export default function QairosHome() {
             </header>
             <div className="dialog-content">
               <div className="wallet-details">
-                <span>Сеть</span>
+                <span>Network</span>
                 <b>Ethereum Mainnet · chain 1</b>
-                <span>Контракт</span>
+                <span>Contract</span>
                 <code>{review.to}</code>
-                <span>Метод</span>
+                <span>Method</span>
                 <b>{review.functionName}</b>
-                <span>Отправитель</span>
+                <span>Sender</span>
                 <code>{review.from}</code>
-                <span>Значение</span>
+                <span>Value</span>
                 <b>{formatEtherSafe(review.value)} ETH</b>
-                <span>Лимит газа</span>
+                <span>Gas limit</span>
                 <b>{review.gasLimit.toLocaleString("en-US")}</b>
-                <span>Оценка комиссии</span>
+                <span>Estimated fee</span>
                 <b>
-                  до {formatEtherSafe(review.gasLimit * review.gasPrice)} ETH
+                  up to{formatEtherSafe(review.gasLimit * review.gasPrice)} ETH
                 </b>
               </div>
               <details className="calldata-details">
-                <summary>Показать calldata</summary>
+                <summary>Show calldata</summary>
                 <code>{review.data}</code>
               </details>
               <label className="review-ack">
-                <input
+                <inpu
                   type="checkbox"
                   checked={reviewChecked}
                   onChange={(event) => setReviewChecked(event.target.checked)}
                 />
                 <span>
-                  Я проверил сеть, адрес контракта, функцию, сумму и адрес
-                  отправителя.
+                  I have checked the network, contract address, function, amount, and sender address.
                 </span>
               </label>
               <div className="dialog-actions">
@@ -2489,28 +2435,24 @@ export default function QairosHome() {
                   disabled={sending}
                   onClick={() => setReview(null)}
                 >
-                  Отмена
-                </button>
+                  Cancel</button>
                 <button
                   className="button button-primary"
                   disabled={!reviewChecked || sending}
                   onClick={() => void confirmTransaction()}
                 >
                   {sending
-                    ? "Ожидаем подтверждение…"
-                    : "Подтвердить в кошельке"}
+                    ? "Waiting for confirmation…"
+                    : "Confirm in wallet"}
                 </button>
               </div>
               <p className="small-note">
-                Перед отправкой симуляция и оценка газа будут выполнены
-                повторно. Транзакцию окончательно подтверждает только ваш
-                кошелек.
+                The transaction will be simulated and gas-estimated again before sending. Only your wallet gives final confirmation.
               </p>
             </div>
           </>
         )}
       </dialog>
     </main>
-    </EnglishContent>
   );
 }

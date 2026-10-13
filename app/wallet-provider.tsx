@@ -71,14 +71,14 @@ function legacyName(provider: InjectedProvider) {
 
 function explainWalletError(error: unknown) {
   const walletError = error as { code?: number; message?: string };
-  if (walletError?.code === 4001) return "Запрос отклонен в кошельке.";
+  if (walletError?.code === 4001) return "Request rejected in your wallet.";
   if (walletError?.code === -32002)
-    return "В кошельке уже есть ожидающий запрос. Откройте его.";
+    return "A request is already pending in your wallet. Open it to continue.";
   if (walletError?.code === 4902)
-    return "Кошелек не знает сеть Ethereum Mainnet.";
+    return "The wallet does not recognize Ethereum Mainnet.";
   return (
     walletError?.message?.slice(0, 180) ||
-    "Не удалось выполнить запрос кошелька."
+    "Could not complete the wallet request."
   );
 }
 
@@ -161,12 +161,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setAccount(typeof first === "string" ? getAddress(first) : "");
         setStatus(
           typeof first === "string"
-            ? "Аккаунт кошелька изменен."
-            : "Кошелек отключен для этого сайта.",
+            ? "Wallet account changed."
+            : "Wallet disconnected from this site.",
         );
       } catch {
         setAccount("");
-        setStatus("Кошелек вернул некорректный адрес.");
+        setStatus("The wallet returned an invalid address.");
       }
     };
     const onChainChanged = (value: unknown) => {
@@ -175,14 +175,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setChainId(Number.isSafeInteger(parsed) ? parsed : null);
       setStatus(
         parsed === MAINNET_ID
-          ? "Кошелек подключен к Ethereum Mainnet."
-          : `Выбрана сеть ${parsed}. Для действий Qairos нужна Ethereum Mainnet.`,
+          ? "Wallet connected to Ethereum Mainnet."
+          : `Network ${parsed} selected. Ethervance actions require Ethereum Mainnet.`,
       );
     };
     const onDisconnect = () => {
       setAccount("");
       setChainId(null);
-      setStatus("Кошелек отключен.");
+      setStatus("Wallet disconnected.");
     };
 
     provider.on?.("accountsChanged", onAccountsChanged);
@@ -242,13 +242,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const connect = useCallback(async (wallet: DiscoveredWallet) => {
     setBusy(true);
-    setStatus(`Ожидаем подтверждение в ${wallet.name}…`);
+    setStatus(`Waiting for approval in ${wallet.name}…`);
     try {
       const accounts = await wallet.provider.request({
         method: "eth_requestAccounts",
       });
       if (!Array.isArray(accounts) || typeof accounts[0] !== "string")
-        throw new Error("Кошелек не вернул аккаунт.");
+        throw new Error("The wallet did not return an account.");
       const network = await wallet.provider.request({ method: "eth_chainId" });
       setActiveWallet(wallet);
       setAccount(getAddress(accounts[0]));
@@ -260,7 +260,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       } catch {
         /* Connection remains in memory. */
       }
-      setStatus("Кошелек подключен. Проверьте сеть перед любыми действиями.");
+      setStatus("Wallet connected. Check the network before taking any action.");
     } catch (error) {
       setStatus(explainWalletError(error));
       throw error;
@@ -279,12 +279,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       /* Storage can be unavailable. */
     }
     setStatus(
-      "Кошелек забыт этим сайтом. Разрешение можно отозвать в настройках кошелька.",
+      "This site has forgotten the wallet. You can revoke access in your wallet settings.",
     );
   }, []);
 
   const switchToMainnet = useCallback(async () => {
-    if (!activeWallet) throw new Error("Сначала подключите кошелек.");
+    if (!activeWallet) throw new Error("Connect a wallet first.");
     setBusy(true);
     try {
       await activeWallet.provider.request({
@@ -299,8 +299,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setChainId(nextChainId);
       setStatus(
         nextChainId === MAINNET_ID
-          ? "Переключено на Ethereum Mainnet."
-          : "Кошелек не переключил сеть.",
+          ? "Switched to Ethereum Mainnet."
+          : "The wallet did not switch networks.",
       );
     } catch (error) {
       setStatus(explainWalletError(error));
