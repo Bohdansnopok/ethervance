@@ -1,6 +1,6 @@
 # Qairos Quantum Console
 
-English-language Qairos dashboard and content kit built with Next.js, TypeScript, Tailwind CSS, ethers and ML-DSA-44.
+English-language Qairos dashboard built with Next.js, TypeScript, Tailwind CSS, ethers and ML-DSA-44.
 
 ## Start
 
@@ -22,10 +22,6 @@ For production, serve the app and `/api` from the same HTTPS origin or configure
 Set `NEXT_PUBLIC_PRIVY_APP_ID` in `.env.local` to enable the Privy wallet connection modal. The Privy connection is bridged into the same wallet session and transaction review flow used by other wallets. Without the App ID, the chooser discovers EIP-6963 and legacy EIP-1193 providers, including installed MetaMask, Rabby, Coinbase Wallet, Brave, Trust and OKX wallets. QR/WalletConnect is not configured by the official Qairos deployment, so this app does not display a nonfunctional QR option.
 
 Writes are gated on a matching wallet session and Ethereum Mainnet. Each operation is simulated and gas-estimated, reviewed on screen, rechecked immediately before sending, then confirmed in the wallet. Qairos contracts are experimental and unaudited; the UI does not imply that monitoring guarantees safety.
-
-## Content Kit
-
-The 12 Russian post drafts can be copied individually. Each has a distinct banner composition and exports to a 1200 × 675 PNG locally in the browser.
 
 ## Verification
 

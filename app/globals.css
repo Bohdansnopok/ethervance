@@ -678,7 +678,6 @@ button:disabled {
 .console-section,
 .steps-section,
 .modules-section,
-.social-section,
 .usecase-section,
 .technology-section,
 .roadmap-section,
@@ -1042,7 +1041,6 @@ button:disabled {
 
 .steps-grid,
 .module-grid,
-.post-grid,
 .usecase-grid,
 .roadmap-grid {
   display: grid;
@@ -1130,237 +1128,6 @@ button:disabled {
 .module-grid .module-card:nth-child(3n) {
   border-right: 0;
 }
-.post-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.post-card {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  padding: 13px;
-}
-.post-card > p {
-  flex: 1;
-  margin: 12px 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.5;
-}
-.post-actions {
-  gap: 6px;
-}
-.post-art {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  aspect-ratio: 16 / 9;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
-  background-color: #10110f;
-  background-image:
-    linear-gradient(rgba(242, 240, 232, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(242, 240, 232, 0.05) 1px, transparent 1px);
-  background-size: 22px 22px;
-  color: #f2f0e8;
-  padding: 17px;
-}
-.post-art::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(16, 17, 15, 0.92),
-    rgba(16, 17, 15, 0.42) 70%,
-    rgba(16, 17, 15, 0.15)
-  );
-  content: "";
-}
-.post-art-label,
-.post-art h3,
-.post-art-footer {
-  position: relative;
-  z-index: 2;
-  max-width: 76%;
-}
-.post-art-label,
-.post-art-footer {
-  color: var(--lime);
-  font:
-    700 8px ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    monospace;
-}
-.post-art h3 {
-  margin: auto 0 10px;
-  font-size: 17px;
-  line-height: 1.07;
-}
-.post-art-footer {
-  color: #c5c9ba;
-}
-.post-art-mark {
-  position: absolute;
-  top: 50%;
-  left: 76%;
-  width: 42%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-}
-.post-art-mark i {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(216, 255, 90, 0.82);
-  border-radius: 50%;
-}
-.post-art-mark i:nth-child(2) {
-  inset: 15%;
-  opacity: 0.7;
-}
-.post-art-mark i:nth-child(3) {
-  inset: 31%;
-  opacity: 0.5;
-}
-.art-01 .post-art-mark {
-  transform: translate(-50%, -50%) rotate(-28deg);
-}
-.art-02 .post-art-mark {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--lime) 0 3px,
-    transparent 3px 10px
-  );
-  clip-path: polygon(
-    0 42%,
-    10% 31%,
-    20% 56%,
-    30% 20%,
-    40% 62%,
-    50% 30%,
-    60% 71%,
-    70% 21%,
-    80% 49%,
-    90% 33%,
-    100% 46%,
-    100% 54%,
-    90% 42%,
-    80% 59%,
-    70% 32%,
-    60% 82%,
-    50% 43%,
-    40% 73%,
-    30% 33%,
-    20% 67%,
-    10% 42%,
-    0 51%
-  );
-}
-.art-02 .post-art-mark i {
-  display: none;
-}
-.art-03 .post-art-mark {
-  background-image: radial-gradient(var(--lime) 1.5px, transparent 1.7px);
-  background-size: 11px 11px;
-  border-radius: 0;
-}
-.art-03 .post-art-mark i {
-  display: none;
-}
-.art-04 .post-art-mark {
-  border: 1px solid var(--lime);
-  border-radius: 0;
-  transform: translate(-50%, -50%) rotate(45deg);
-  box-shadow:
-    0 0 0 15px rgba(216, 255, 90, 0.08),
-    0 0 0 30px rgba(216, 255, 90, 0.06);
-}
-.art-05 .post-art-mark::after {
-  position: absolute;
-  inset: -28% 0 0;
-  color: rgba(216, 255, 90, 0.7);
-  content: "05";
-  font:
-    900 80px/1 ui-monospace,
-    monospace;
-}
-.art-05 .post-art-mark i {
-  display: none;
-}
-.art-06 .post-art-mark i {
-  border-style: dashed;
-}
-.art-07 .post-art-mark {
-  background:
-    linear-gradient(
-      90deg,
-      transparent 43%,
-      var(--lime) 43% 57%,
-      transparent 57%
-    ),
-    linear-gradient(transparent 43%, var(--lime) 43% 57%, transparent 57%);
-  opacity: 0.65;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-.art-07 .post-art-mark i {
-  display: none;
-}
-.art-08 .post-art-mark {
-  background: repeating-linear-gradient(
-    155deg,
-    transparent 0 9px,
-    rgba(216, 255, 90, 0.75) 9px 10px
-  );
-  border-radius: 50%;
-  clip-path: inset(0 0 0 0 round 50%);
-}
-.art-08 .post-art-mark i {
-  display: none;
-}
-.art-09 .post-art-mark {
-  border: 1px solid rgba(216, 255, 90, 0.8);
-  background:
-    linear-gradient(
-      90deg,
-      transparent 49.5%,
-      var(--lime) 50%,
-      transparent 50.5%
-    ),
-    linear-gradient(transparent 49.5%, var(--lime) 50%, transparent 50.5%);
-  border-radius: 50%;
-}
-.art-10 .post-art-mark {
-  background: repeating-linear-gradient(
-    135deg,
-    rgba(216, 255, 90, 0.72) 0 2px,
-    transparent 2px 12px
-  );
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-}
-.art-10 .post-art-mark i {
-  display: none;
-}
-.art-11 .post-art-mark i {
-  border-radius: 3px;
-  transform: rotate(35deg);
-}
-.art-12 .post-art-mark {
-  background: repeating-conic-gradient(
-    from 5deg at 50% 50%,
-    rgba(216, 255, 90, 0.78) 0 1deg,
-    transparent 1deg 18deg
-  );
-  border-radius: 50%;
-  mask-image: radial-gradient(circle, transparent 0 18%, #000 19%);
-}
-.art-12 .post-art-mark i {
-  display: none;
-}
-
 .usecase-section {
   margin-inline: calc((min(100vw - 40px, 1180px) - 100vw) / 2);
   padding: 65px max(calc((100vw - 1180px) / 2), 20px);
@@ -1559,6 +1326,9 @@ button:disabled {
 }
 
 .app-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   width: min(calc(100% - 32px), 550px);
   max-width: none;
   max-height: min(88dvh, 760px);
@@ -1595,67 +1365,7 @@ button:disabled {
   font-size: 12px;
   line-height: 1.55;
 }
-.wallet-options {
-  display: grid;
-  gap: 7px;
-}
-.wallet-options > button {
-  display: grid;
-  min-height: 62px;
-  grid-template-columns: 34px minmax(0, 1fr) 20px;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--ink);
-  padding: 10px 12px;
-  text-align: left;
-}
-.wallet-options > button:hover {
-  border-color: var(--ink);
-  background: var(--paper-2);
-}
-.wallet-options img,
-.wallet-glyph {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  font-size: 25px;
-  text-align: center;
-}
-.wallet-options button > span:nth-child(2) {
-  display: grid;
-  gap: 4px;
-}
-.wallet-options b {
-  font-size: 12px;
-}
-.wallet-options small {
-  color: var(--muted);
-  font-size: 9px;
-}
-.empty-wallets {
-  border: 1px solid var(--line);
-  padding: 15px;
-}
-.empty-wallets b {
-  font-size: 13px;
-}
-.empty-wallets p {
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.55;
-}
-.install-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 13px;
-  font-size: 10px;
-}
-.install-links a {
-  color: var(--ink);
-  text-underline-offset: 3px;
-}
+
 .wallet-details {
   display: grid;
   grid-template-columns: minmax(92px, 0.45fr) minmax(0, 1fr);
@@ -1749,9 +1459,6 @@ button:disabled {
   }
   .step-item {
     padding: 14px;
-  }
-  .post-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .roadmap-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1875,8 +1582,7 @@ button:disabled {
   .console-section,
   .steps-section,
   .modules-section,
-  .social-section,
-  .usecase-section,
+    .usecase-section,
   .technology-section,
   .roadmap-section,
   .faq-section {
@@ -1947,8 +1653,7 @@ button:disabled {
   .step-item {
     min-height: 180px;
   }
-  .module-grid,
-  .post-grid {
+  .module-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .module-grid .module-card:nth-child(3n) {
@@ -1964,25 +1669,6 @@ button:disabled {
   .module-card > b {
     margin-top: 20px;
     font-size: 18px;
-  }
-  .post-card {
-    padding: 8px;
-  }
-  .post-art {
-    padding: 10px;
-  }
-  .post-art h3 {
-    font-size: 13px;
-  }
-  .post-art-label,
-  .post-art-footer {
-    font-size: 7px;
-  }
-  .post-card > p {
-    font-size: 10px;
-  }
-  .post-actions .button {
-    flex: 1 1 100%;
   }
   .modules-section,
   .usecase-section {
@@ -2083,24 +1769,6 @@ button:disabled {
     font-size: 10px;
   }
   .metrics-strip span {
-    font-size: 9px;
-  }
-  .post-art {
-    padding: 8px;
-  }
-  .post-art h3 {
-    max-width: 82%;
-    font-size: 11px;
-  }
-  .post-art-mark {
-    left: 79%;
-    width: 45%;
-  }
-  .post-art-footer {
-    font-size: 6px;
-  }
-  .post-actions .button {
-    padding: 7px 5px;
     font-size: 9px;
   }
   .market-row {

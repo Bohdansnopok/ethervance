@@ -23,11 +23,10 @@ import {
   MAINNET_CHAIN_ID,
 } from "./qairos";
 import { useTheme } from "./theme-provider";
-import { useWallet, type DiscoveredWallet } from "./wallet-provider";
+import { useWallet } from "./wallet-provider";
 import PrivyWalletConnect from "./privy-wallet-connect";
 import { EnglishContent, translateText } from "./i18n";
 
-type Post = { title: string; text: string };
 type MainnetMarket = {
   id: number;
   bits: number;
@@ -94,57 +93,6 @@ type Review = {
   afterConfirm?: (blockNumber: number) => void;
 };
 
-const posts: Post[] = [
-  {
-    title: "Готовность начинается до сигнала.",
-    text: "План реагирования полезен только тогда, когда он подготовлен заранее. Qairos объединяет публичный сигнал и понятные шаги для владельцев активов и протоколов.",
-  },
-  {
-    title: "Один сигнал. Следующий шаг понятен.",
-    text: "Уровень угрозы имеет смысл, когда за ним следует действие. Проверяйте источник данных, допущения и свою политику реагирования.",
-  },
-  {
-    title: "Двенадцать ступеней. Публичный сигнал.",
-    text: "Лестница Qairos Canary помогает наблюдать за прогрессом криптографических испытаний. Любое заявление о результате должно быть проверяемым.",
-  },
-  {
-    title: "Подготовьте восстановление заранее.",
-    text: "Не откладывайте проверку адресов и процедур до кризиса. Пройдите путь восстановления вместе с доверенным проверяющим.",
-  },
-  {
-    title: "Продумайте паузу до необходимости.",
-    text: "Протоколы могут заранее определить реакцию чувствительных операций на изменение сигнала. Политику нужно документировать и тестировать.",
-  },
-  {
-    title: "Seed-фраза остаётся только у вас.",
-    text: "Сайт не должен просить вас вводить seed-фразу или приватный ключ. Храните секреты офлайн и независимо проверяйте каждое действие.",
-  },
-  {
-    title: "Проверяйте источник сигнала.",
-    text: "Оракул помогает принять решение, но не заменяет его. Изучите происхождение данных, ограничения и условия использования.",
-  },
-  {
-    title: "План восстановления нужно проверять.",
-    text: "Непроверенный план остаётся предположением. Сверьте адрес назначения и порядок действий до того, как они понадобятся.",
-  },
-  {
-    title: "Доказательства готовят заранее.",
-    text: "Понимайте, что именно фиксирует commitment, и берегите данные восстановления. Не публикуйте материалы, дающие доступ к активам.",
-  },
-  {
-    title: "Открытый код требует проверки.",
-    text: "Читайте исходники, воспроизводите тесты и запрашивайте независимый аудит. Маркетинговое обещание не является доказательством безопасности.",
-  },
-  {
-    title: "Тестируйте до Mainnet.",
-    text: "Тестовая сеть помогает найти ошибки интеграции, но не доказывает безопасность контракта. Нужны аудит и моделирование угроз.",
-  },
-  {
-    title: "Подготовка — это практика.",
-    text: "Отметьте открытые ключи, проверьте восстановление и договоритесь о ролях. Маленькие проверяемые шаги лучше обещаний под давлением.",
-  },
-];
-
 const toolList = [
   ["oracle", "Монитор угроз", "Живой сигнал Mainnet и ступени Canary"],
   ["ark", "Qairos Ark", "ML-DSA-44, commitment и recovery kit"],
@@ -170,7 +118,7 @@ const faq = [
   ],
   [
     "Какие кошельки поддерживаются?",
-    "Сайт обнаруживает EIP-6963 и совместимые EIP-1193 кошельки, включая MetaMask, Rabby, Coinbase Wallet, Brave, Trust и OKX. QR/WalletConnect отключён в официальном примере и здесь не заявляется как доступный.",
+    "Connect an Ethereum wallet such as MetaMask through Privy's connection window. Your wallet will ask you to approve the connection.",
   ],
   [
     "Нужно ли переключаться на Ethereum Mainnet?",
@@ -257,231 +205,6 @@ function validateSnapshot(value: unknown): MainnetSnapshot {
     );
   }
   return snapshot as MainnetSnapshot;
-}
-
-function BannerArtwork({ post, index }: { post: Post; index: number }) {
-  return (
-    <EnglishContent>
-    <div className={`post-art art-${String(index + 1).padStart(2, "0")}`}>
-      <span className="post-art-label">
-        QAIROS / {String(index + 1).padStart(2, "0")}
-      </span>
-      <div aria-hidden="true" className="post-art-mark">
-        <i />
-        <i />
-        <i />
-      </div>
-      <h3>{post.title}</h3>
-      <span className="post-art-footer">ETHEREUM · 2026</span>
-    </div>
-    </EnglishContent>
-  );
-}
-
-function drawBanner(post: Post, index: number) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1200;
-  canvas.height = 675;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("Браузер не поддерживает экспорт баннера.");
-  const seed = index + 1;
-  const lime = "#d8ff5a";
-  const paper = "#f2f0e8";
-  const centerX = 770 + ((seed * 37) % 300);
-  const centerY = 140 + ((seed * 43) % 380);
-
-  context.fillStyle = "#10110f";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.strokeStyle = "rgba(242,240,232,.08)";
-  context.lineWidth = 1;
-  for (let x = 32; x < canvas.width; x += 32) {
-    context.beginPath();
-    context.moveTo(x, 0);
-    context.lineTo(x, canvas.height);
-    context.stroke();
-  }
-  for (let y = 32; y < canvas.height; y += 32) {
-    context.beginPath();
-    context.moveTo(0, y);
-    context.lineTo(canvas.width, y);
-    context.stroke();
-  }
-
-  context.strokeStyle = "rgba(216,255,90,.78)";
-  context.fillStyle = "rgba(216,255,90,.78)";
-  context.lineWidth = 2;
-  switch (index) {
-    case 0:
-      for (let ring = 1; ring < 7; ring += 1) {
-        context.beginPath();
-        context.arc(centerX, centerY, ring * 32, 0.18 * seed, Math.PI * 1.82);
-        context.stroke();
-      }
-      context.beginPath();
-      context.moveTo(centerX - 210, centerY + 130);
-      context.lineTo(centerX + 200, centerY - 140);
-      context.stroke();
-      break;
-    case 1:
-      for (let bar = 0; bar < 18; bar += 1) {
-        const height = 30 + ((bar * seed * 23) % 270);
-        context.fillRect(710 + bar * 25, centerY - height / 2, 5, height);
-      }
-      break;
-    case 2:
-      for (let row = 0; row < 13; row += 1)
-        for (let column = 0; column < 14; column += 1) {
-          if ((row * 3 + column * seed) % 5 !== 0) {
-            context.beginPath();
-            context.arc(
-              700 + column * 27,
-              170 + row * 25,
-              2 + ((row + column) % 3),
-              0,
-              Math.PI * 2,
-            );
-            context.fill();
-          }
-        }
-      break;
-    case 3:
-      for (let block = 0; block < 8; block += 1) {
-        const size = 18 + (block % 3) * 12;
-        context.globalAlpha = 0.25 + (block % 4) * 0.18;
-        context.fillRect(
-          735 + (block % 3) * 105,
-          125 + Math.floor(block / 3) * 130,
-          size,
-          size,
-        );
-      }
-      context.globalAlpha = 1;
-      break;
-    case 4:
-      for (let stripe = 0; stripe < 12; stripe += 1) {
-        context.beginPath();
-        context.moveTo(720 + stripe * 31, 90);
-        context.lineTo(560 + stripe * 55, 590);
-        context.stroke();
-      }
-      break;
-    case 5:
-      context.strokeStyle = "rgba(216,255,90,.65)";
-      for (let radius = 45; radius <= 240; radius += 32) {
-        context.beginPath();
-        context.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        context.stroke();
-      }
-      context.beginPath();
-      context.moveTo(centerX - 250, centerY);
-      context.lineTo(centerX + 250, centerY);
-      context.moveTo(centerX, centerY - 250);
-      context.lineTo(centerX, centerY + 250);
-      context.stroke();
-      break;
-    case 6:
-      context.fillStyle = "rgba(216,255,90,.13)";
-      context.fillRect(710, 135, 420, 6);
-      context.fillRect(760, 165, 320, 6);
-      context.fillRect(735, 195, 375, 6);
-      context.fillStyle = lime;
-      context.font = "700 180px monospace";
-      context.fillText("Q", 830, 465);
-      break;
-    case 7:
-      context.strokeStyle = "rgba(216,255,90,.58)";
-      for (let step = 0; step < 8; step += 1) {
-        const offset = step * 28;
-        context.strokeRect(
-          820 - offset / 2,
-          175 - offset / 2,
-          170 + offset,
-          170 + offset,
-        );
-      }
-      break;
-    case 8:
-      context.lineWidth = 8;
-      for (let wave = 0; wave < 9; wave += 1) {
-        context.beginPath();
-        context.ellipse(
-          centerX,
-          centerY,
-          80 + wave * 24,
-          35 + wave * 17,
-          -0.42,
-          0.2,
-          Math.PI * 1.68,
-        );
-        context.stroke();
-      }
-      context.lineWidth = 2;
-      break;
-    case 9:
-      for (let tick = 0; tick < 64; tick += 1) {
-        const height = 24 + Math.abs(Math.sin(tick * 0.61 + seed) * 180);
-        context.fillRect(690 + tick * 7, centerY - height / 2, 3, height);
-      }
-      break;
-    case 10:
-      context.fillStyle = lime;
-      for (let tile = 0; tile < 10; tile += 1) {
-        const x = 735 + (tile % 3) * 120;
-        const y = 150 + Math.floor(tile / 3) * 90;
-        context.globalAlpha = 0.18 + (tile % 4) * 0.18;
-        context.beginPath();
-        context.roundRect(x, y, 72 + (tile % 2) * 34, 18, 9);
-        context.fill();
-      }
-      context.globalAlpha = 1;
-      break;
-    default:
-      context.font = "700 330px monospace";
-      context.fillStyle = "rgba(216,255,90,.13)";
-      context.fillText("12", 720, 430);
-      context.strokeStyle = "rgba(216,255,90,.9)";
-      for (let ray = 0; ray < 12; ray += 1) {
-        const angle = (Math.PI * 2 * ray) / 12;
-        context.beginPath();
-        context.moveTo(centerX, centerY);
-        context.lineTo(
-          centerX + Math.cos(angle) * 220,
-          centerY + Math.sin(angle) * 220,
-        );
-        context.stroke();
-      }
-      break;
-  }
-
-  context.fillStyle = lime;
-  context.beginPath();
-  context.arc(centerX, centerY, 7, 0, Math.PI * 2);
-  context.fill();
-  context.fillStyle = lime;
-  context.font = "700 18px monospace";
-  context.fillText(`QAIROS / ${String(index + 1).padStart(2, "0")}`, 64, 72);
-  context.fillStyle = paper;
-  context.font = "700 54px sans-serif";
-  const titleWords = post.title.split(" ");
-  const titleLines: string[] = [];
-  let currentLine = "";
-  for (const word of titleWords) {
-    const candidate = currentLine ? `${currentLine} ${word}` : word;
-    if (context.measureText(candidate).width > 630 && currentLine) {
-      titleLines.push(currentLine);
-      currentLine = word;
-    } else currentLine = candidate;
-  }
-  if (currentLine) titleLines.push(currentLine);
-  titleLines
-    .slice(0, 3)
-    .forEach((line, lineIndex) =>
-      context.fillText(line, 64, 210 + lineIndex * 68),
-    );
-  context.fillStyle = "#a9ada1";
-  context.font = "18px monospace";
-  context.fillText("POST-QUANTUM READINESS", 64, 600);
-  return canvas;
 }
 
 export default function QairosHome() {
@@ -1204,35 +927,6 @@ export default function QairosHome() {
     }
   };
 
-  const exportPost = (index: number) => {
-    try {
-      const post = posts[index];
-      const canvas = drawBanner(
-        { title: translateText(post.title), text: translateText(post.text) },
-        index,
-      );
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = `qairos-post-${String(index + 1).padStart(2, "0")}.png`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      setNotice(
-        error instanceof Error ? error.message : "Не удалось создать баннер.",
-      );
-    }
-  };
-
-  const copyPost = async (post: Post) => {
-    try {
-      await navigator.clipboard.writeText(translateText(post.text));
-      setNotice("Текст публикации скопирован.");
-    } catch {
-      setNotice("Буфер обмена недоступен в этом браузере.");
-    }
-  };
-
   const downloadGuard = () => {
     const safeName =
       guardName.replace(/[^a-zA-Z0-9_]/g, "") || "QuantumSafeVault";
@@ -1447,15 +1141,6 @@ export default function QairosHome() {
         recoveryKit.salt,
       ]),
     });
-  };
-
-  const connectWallet = async (provider: DiscoveredWallet) => {
-    try {
-      await wallet.connect(provider);
-      setWalletOpen(false);
-    } catch {
-      /* WalletProvider exposes a localized status. */
-    }
   };
 
   const renderTool = () => {
@@ -2030,7 +1715,6 @@ export default function QairosHome() {
           <div className="nav-links">
             <a href="#how">Принцип работы</a>
             <a href="#tools">Инструменты</a>
-            <a href="#content">Публикации</a>
             <a href="#technology">Технологии</a>
             <a href="#faq">FAQ</a>
           </div>
@@ -2064,7 +1748,6 @@ export default function QairosHome() {
         <div className="mobile-nav">
           <a href="#how">Принцип</a>
           <a href="#tools">Инструменты</a>
-          <a href="#content">Посты</a>
           <a href="#faq">FAQ</a>
         </div>
       </header>
@@ -2408,41 +2091,6 @@ export default function QairosHome() {
           </div>
         </section>
 
-        <section className="social-section" id="content">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">КОНТЕНТ-ПАКЕТ · 12 ПУБЛИКАЦИЙ</p>
-              <h2>Двенадцать идей. Двенадцать разных баннеров.</h2>
-            </div>
-            <p>
-              Текст копируется отдельно. PNG размером 1200 × 675 создаётся в
-              браузере и скачивается по запросу.
-            </p>
-          </div>
-          <div className="post-grid">
-            {posts.map((post, index) => (
-              <article className="post-card" key={post.title}>
-                <BannerArtwork post={post} index={index} />
-                <p>{post.text}</p>
-                <div className="post-actions">
-                  <button
-                    className="button button-small"
-                    onClick={() => void copyPost(post)}
-                  >
-                    Копировать текст
-                  </button>
-                  <button
-                    className="button button-small"
-                    onClick={() => exportPost(index)}
-                  >
-                    Скачать PNG
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <section className="usecase-section">
           <p className="eyebrow">ДЛЯ ТЕХ, КТО КОНТРОЛИРУЕТ КЛЮЧИ</p>
           <h2>От личного кошелька до казначейства протокола.</h2>
@@ -2643,7 +2291,6 @@ export default function QairosHome() {
         <div className="footer-links">
           <a href="#console">Панель</a>
           <a href="#tools">Инструменты</a>
-          <a href="#content">Публикации</a>
           <a href="#technology">Технологии</a>
           <a
             href="https://github.com/Qairos-app"
@@ -2745,79 +2392,25 @@ export default function QairosHome() {
           ) : (
             <>
               <p className="dialog-intro">
-                Выберите обнаруженный браузерный кошелек. Запрос аккаунта будет
-                показан только после вашего клика.
+                Connect an Ethereum wallet through Privy. Your wallet will ask
+                you to approve the connection.
               </p>
-              {process.env.NEXT_PUBLIC_PRIVY_APP_ID && (
+              {process.env.NEXT_PUBLIC_PRIVY_APP_ID ? (
                 <div className="privy-connect-wrap">
                   <PrivyWalletConnect
                     onStart={() => setWalletOpen(false)}
                     onConnected={() => setWalletOpen(false)}
                   />
-                  <p className="small-note">
-                    Privy откроет собственное окно подключения. Разрешение на
-                    доступ к адресу запрашивается в кошельке.
-                  </p>
-                </div>
-              )}
-              {wallet.wallets.length ? (
-                <div className="wallet-options">
-                  {wallet.wallets.map((provider) => (
-                    <button
-                      key={provider.id}
-                      disabled={wallet.busy}
-                      onClick={() => void connectWallet(provider)}
-                    >
-                      {provider.icon ? (
-                        <img src={provider.icon} alt="" />
-                      ) : (
-                        <span className="wallet-glyph">◈</span>
-                      )}
-                      <span>
-                        <b>{provider.name}</b>
-                        <small>EIP-1193 · встроенный кошелек</small>
-                      </span>
-                      <span aria-hidden="true">↗</span>
-                    </button>
-                  ))}
                 </div>
               ) : (
                 <div className="empty-wallets">
-                  <b>Браузерные кошельки не обнаружены</b>
+                  <b>Privy connection is not configured</b>
                   <p>
-                    На компьютере установите MetaMask, Rabby, Coinbase Wallet,
-                    Brave, Trust или OKX. На телефоне откройте сайт во
-                    встроенном браузере wallet-приложения.
+                    Set NEXT_PUBLIC_PRIVY_APP_ID from your Privy dashboard and
+                    redeploy to enable wallet connection.
                   </p>
-                  <div className="install-links">
-                    <a
-                      href="https://metamask.io/download/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      MetaMask ↗
-                    </a>
-                    <a
-                      href="https://rabby.io/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Rabby ↗
-                    </a>
-                    <a
-                      href="https://www.coinbase.com/wallet"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Coinbase ↗
-                    </a>
-                  </div>
                 </div>
               )}
-              <p className="small-note">
-                QR / WalletConnect не активирован в официальной конфигурации
-                Qairos. Сайт не предлагает фиктивное QR-подключение.
-              </p>
             </>
           )}
           {wallet.status && (
