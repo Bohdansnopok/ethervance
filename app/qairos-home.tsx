@@ -1240,7 +1240,7 @@ export default function QairosHome() {
           </div>
           <label className="field-label" htmlFor="kit-file">
             Recovery kit file (.json)</label>
-          <inpu
+          <input
             id="kit-file"
             className="file-input"
             type="file"
@@ -1265,7 +1265,7 @@ export default function QairosHome() {
           )}
           <label className="field-label" htmlFor="recovery-destination">
             New destination address</label>
-          <inpu
+          <input
             id="recovery-destination"
             className="text-input"
             autoComplete="off"
@@ -1400,7 +1400,7 @@ export default function QairosHome() {
           <div className="form-grid">
             <label>
               <span>Deposit ETH</span>
-              <inpu
+              <input
                 className="text-input"
                 inputMode="decimal"
                 value={depositAmount}
@@ -1415,7 +1415,7 @@ export default function QairosHome() {
               Prepare deposit</button>
             <label>
               <span>Withdraw ETH</span>
-              <inpu
+              <input
                 className="text-input"
                 inputMode="decimal"
                 value={withdrawAmount}
@@ -1449,7 +1449,7 @@ export default function QairosHome() {
           </div>
           <label className="field-label" htmlFor="market-stake">
             Position size in ETH</label>
-          <inpu
+          <input
             id="market-stake"
             className="text-input amount-input"
             inputMode="decimal"
@@ -1506,7 +1506,7 @@ export default function QairosHome() {
           <div className="form-grid">
             <label>
               <span>Coverage in ETH</span>
-              <inpu
+              <input
                 className="text-input"
                 inputMode="decimal"
                 value={insuranceCoverage}
@@ -1515,7 +1515,7 @@ export default function QairosHome() {
             </label>
             <label>
               <span>Term, years</span>
-              <selec
+              <select
                 className="text-input"
                 value={insuranceYears}
                 onChange={(event) => setInsuranceYears(event.target.value)}
@@ -1563,7 +1563,7 @@ export default function QairosHome() {
           <div className="form-grid">
             <label>
               <span>Contract name</span>
-              <inpu
+              <input
                 className="text-input"
                 value={guardName}
                 maxLength={48}
@@ -1574,7 +1574,7 @@ export default function QairosHome() {
             </label>
             <label>
               <span>Trigger level</span>
-              <inpu
+              <input
                 className="text-input"
                 type="number"
                 min="1"
@@ -2344,7 +2344,7 @@ export default function QairosHome() {
               </p>
               {process.env.NEXT_PUBLIC_PRIVY_APP_ID ? (
                 <div className="privy-connect-wrap">
-                  <PrivyWalletConnec
+                  <PrivyWalletConnect
                     onStart={() => setWalletOpen(false)}
                     onConnected={() => setWalletOpen(false)}
                   />
@@ -2420,7 +2420,7 @@ export default function QairosHome() {
                 <code>{review.data}</code>
               </details>
               <label className="review-ack">
-                <inpu
+                <input
                   type="checkbox"
                   checked={reviewChecked}
                   onChange={(event) => setReviewChecked(event.target.checked)}
