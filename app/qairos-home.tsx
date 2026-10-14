@@ -2029,7 +2029,7 @@ export default function QairosHome() {
                 key={id}
                 onClick={() => {
                   setActiveTool(id);
-                  documen
+                  document
                     .getElementById("console")
                     ?.scrollIntoView({ behavior: "smooth" });
                 }}
